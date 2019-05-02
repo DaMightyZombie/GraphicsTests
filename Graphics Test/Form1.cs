@@ -17,6 +17,12 @@ namespace Graphics_Test
         public Form1()
         {
             InitializeComponent();
+
+            this.SetStyle(ControlStyles.UserPaint, true);
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+            //this.SetStyle(ControlStyles.DoubleBuffer, true);
+
+
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
@@ -65,14 +71,34 @@ namespace Graphics_Test
             Scene.AddSceneObject(new Line(new Vector3(100, 0, 100), new Vector3(0, 0, 100)));
             Scene.AddSceneObject(new Line(new Vector3(100, 0, 100), new Vector3(100, 100, 100)));
             Scene.AddSceneObject(new Line(new Vector3(100, 0, 100), new Vector3(100, 0, 0)));
-            
-            
-            Scene.MoveScene(new Vector3(0, 0, 50));
+
+
+            Scene.AddSceneObject(new Line(new Vector3(0, 100, 0), new Vector3(0, 100, 300)));
+            Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(50, 100, 300)));
+            Scene.AddSceneObject(new Line(new Vector3(100, 100, 0), new Vector3(100, 100, 300)));
+            Scene.AddSceneObject(new Line(new Vector3(150, 100, 0), new Vector3(150, 100, 300)));
+            Scene.AddSceneObject(new Line(new Vector3(200, 100, 0), new Vector3(200, 100, 300)));
+
+
+            Scene.AddSceneObject(new Line(new Vector3(-300, 100, 0), new Vector3(300, 100, 0)));
+            Scene.AddSceneObject(new Line(new Vector3(-300, 100, 50), new Vector3(300, 100, 50)));
+            Scene.AddSceneObject(new Line(new Vector3(-300, 100, 100), new Vector3(300, 100, 100)));
+            Scene.AddSceneObject(new Line(new Vector3(-300, 100, 150), new Vector3(300, 100, 150)));
+            Scene.AddSceneObject(new Line(new Vector3(-300, 100, 200), new Vector3(300, 100, 200)));
+
+            Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(350, 100, 300)));
+            Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(-350, 100, 300)));
+
+
+            Scene.MoveScene(new Vector3(-50, -50, 200));
 
             Scene.DrawToGraphicsObj(graphicsObj);
             graphicsObj.Dispose();
 
             Console.WriteLine($"Screen Dimensions: {ClientRectangle.Width}, {ClientRectangle.Height}");
+            double a = 5;
+            double b = 500;
+            Console.WriteLine($"TEST: {a>b}");
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -81,29 +107,28 @@ namespace Graphics_Test
 
             if (pressedKey == Keys.Right)
             {
-                Scene.MoveScene(new Vector3(-1, 0, 0));
+                Scene.MoveScene(new Vector3(-5, 0, 0));
             }
             else if (pressedKey == Keys.Left)
             {
-                Scene.MoveScene(new Vector3(1, 0, 0));
+                Scene.MoveScene(new Vector3(5, 0, 0));
             }
             else if (pressedKey == Keys.Up)
             {
-                Scene.MoveScene(new Vector3(0, 1, 0));
+                Scene.MoveScene(new Vector3(0, 5, 0));
             }
             else if (pressedKey == Keys.Down)
             {
-                Scene.MoveScene(new Vector3(0, -1, 0));
+                Scene.MoveScene(new Vector3(0, -5, 0));
             }
             else if (pressedKey == Keys.Add)
             {
-                Scene.MoveScene(new Vector3(0, 0, 1));
+                Scene.MoveScene(new Vector3(0, 0, 5));
             }
             else if (pressedKey == Keys.Subtract)
             {
-                Scene.MoveScene(new Vector3(0, 0, -1));
+                Scene.MoveScene(new Vector3(0, 0, -5));
             }
-
 
             UpdateImage();
         }

@@ -12,24 +12,29 @@ namespace Graphics_Test
     class Camera
     {
         //Postition of the camera
-        Vector3 position;
+        //Vector3 position;
         //Rotation of the camera
-        Vector3 rotation;
+        //Vector3 rotation;
         //Position of the image plane relative to the camera
         Vector3 ImagePlanePos;
 
-        int fov;
+        const double ClippingPlaneFront = 10d;
+        const double ClippingPlaneBack = 500d;
 
-        int width, height;
+        //int fov;
 
-        Brush brush;
-        Pen pen;
+        //int width, height;
+
+        public double ImagePlaneDistance = 100d;
+
+        private readonly Brush brush;
+        private readonly Pen pen;
 
         public Camera(double Width, double Height)
         {
-            position = new Vector3();
-            rotation = new Vector3();
-            ImagePlanePos = new Vector3(Width/2,Height/2,140);
+            //position = new Vector3();
+            //rotation = new Vector3();
+            ImagePlanePos = new Vector3(Width/2,Height/2, ImagePlaneDistance);
             brush = Brushes.Green;
             pen = new Pen(Color.Green);
         }
@@ -38,9 +43,9 @@ namespace Graphics_Test
         {
             double outX, outY;
 
-            outX = ImagePlanePos.Z * relativePosition.X / relativePosition.Z + ImagePlanePos.X;
+            outX = (ImagePlanePos.Z * relativePosition.X / relativePosition.Z) * 7 + ImagePlanePos.X;
 
-            outY = ImagePlanePos.Z * relativePosition.Y / relativePosition.Z + ImagePlanePos.Y;
+            outY = (ImagePlanePos.Z * relativePosition.Y / relativePosition.Z) * 7 + ImagePlanePos.Y;
 
             return new Vector2(outX, outY);
         }
@@ -49,15 +54,101 @@ namespace Graphics_Test
         {
             if (sceneObj is Point)
             {
-                Vector2 pos = LocalSpace2ScreenSpace(((Point)sceneObj).position);
-                graphicsObj.FillRectangle(brush, (float)pos.X, (float)pos.Y, 3, 3);
+                Point point = (Point)sceneObj;
+
+                //Check if the point is between the two clipping planes
+                if (ClippingPlaneFront < point.position.Z && point.position.Z < ClippingPlaneBack)
+                {
+                    Vector2 pos = LocalSpace2ScreenSpace(((Point)sceneObj).position);
+                    graphicsObj.FillRectangle(brush, (float)pos.X, (float)pos.Y, 3, 3);
+                }
             }
             else if (sceneObj is Line)
             {
-                Vector2 pos1 = LocalSpace2ScreenSpace(((Line)sceneObj).point1);
-                Vector2 pos2 = LocalSpace2ScreenSpace(((Line)sceneObj).point2);
+                Line line = (Line)sceneObj;
+
+                Line clippedLine = line.Clone();
+
+                Clip(clippedLine);
+
+                Vector2 pos1 = LocalSpace2ScreenSpace(clippedLine.point1);
+                Vector2 pos2 = LocalSpace2ScreenSpace(clippedLine.point2);
                 graphicsObj.DrawLine(pen, (float)pos1.X, (float)pos1.Y, (float)pos2.X, (float)pos2.Y);
             }
+        }
+
+        private void Clip(Line line)
+        {
+            double factor;
+
+            Console.WriteLine($"Pt 1 was {line.point1.Repr()}, Pt 2 was {line.point2.Repr()}");
+
+            //are both ends of the line in front of the front clipping plane?
+            if (line.point1.Z <= ClippingPlaneFront && line.point2.Z <= ClippingPlaneFront)
+            {
+                return;
+            }
+
+            //are both ends of the line behind the back clipping plane?
+            if (line.point1.Z >= ClippingPlaneBack && line.point2.Z >= ClippingPlaneBack)
+            {
+                return;
+            }
+
+            //is one end of the line in front of the front clipping plane?
+            if (line.point1.Z < ClippingPlaneFront || line.point2.Z < ClippingPlaneFront)
+            {
+                factor = (ClippingPlaneFront - line.point1.Y) / (line.point2.Y - line.point1.Y);
+
+                Console.WriteLine($"Front Factor is {factor}");
+                Console.WriteLine(line.point1.Repr());
+
+
+                if (line.point1.Z < ClippingPlaneFront)
+                {
+                    line.point1.X = line.point1.X + factor * (line.point2.X - line.point1.X);
+
+                    line.point1.Z = line.point1.Z + factor * (line.point2.Z - line.point1.Z);
+
+                    line.point1.Y = ClippingPlaneFront;
+                }
+                else
+                {
+                    line.point2.X = line.point1.X + factor * (line.point2.X - line.point1.X);
+
+                    line.point2.Z = line.point1.Z + factor * (line.point2.Z - line.point1.Z);
+
+                    line.point2.Y = ClippingPlaneFront;
+                }
+            }
+
+            //is one end of the line behind the back clipping plane?
+            if ((line.point1.Z > ClippingPlaneBack) || (line.point2.Z > ClippingPlaneBack))
+            {
+                Console.WriteLine($"{line.point1.Z} > {ClippingPlaneBack}:");
+                Console.WriteLine(line.point1.Z > ClippingPlaneBack);
+                Console.WriteLine($"Points: {line.point1.Z}, {line.point2.Z}");
+                factor = (ClippingPlaneBack - line.point1.Y) / (line.point2.Y - line.point1.Y);
+                Console.WriteLine($"Back Factor is {factor}");
+
+                if (line.point1.Z > ClippingPlaneBack)
+                {
+                    line.point1.X = line.point1.X + factor * (line.point2.X - line.point1.X);
+
+                    line.point1.Z = line.point1.Z + factor * (line.point2.Z - line.point1.Z);
+
+                    line.point1.Y = ClippingPlaneBack;
+                }
+                else
+                {
+                    line.point2.X = line.point1.X + factor * (line.point2.X - line.point1.X);
+
+                    line.point2.Z = line.point1.Z + factor * (line.point2.Z - line.point1.Z);
+
+                    line.point2.Y = ClippingPlaneBack;
+                }
+            }
+            Console.WriteLine($"Pt 1 is {line.point1.Repr()}, Pt 2 is {line.point2.Repr()}");
         }
     }
 
@@ -172,6 +263,11 @@ namespace Graphics_Test
         {
             point1 += direction;
             point2 += direction;
+        }
+
+        public Line Clone()
+        {
+            return new Line(new Vector3(point1.X, point1.Y, point1.Z), new Vector3(point2.X, point2.Y, point2.Z));
         }
     }
 }
