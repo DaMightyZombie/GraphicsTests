@@ -16,7 +16,7 @@ namespace Graphics_Test
         //Rotation of the camera
         //Vector3 rotation;
         //Position of the image plane relative to the camera
-        Vector3 ImagePlanePos;
+        Vector2 ImagePlanePos;
 
         const double ClippingPlaneFront = 10d;
         const double ClippingPlaneBack = 500d;
@@ -25,7 +25,7 @@ namespace Graphics_Test
 
         //int width, height;
 
-        public double ImagePlaneDistance = 100d;
+        public double ImagePlaneDistance;
 
         private readonly Brush brush;
         private readonly Pen pen;
@@ -34,18 +34,19 @@ namespace Graphics_Test
         {
             //position = new Vector3();
             //rotation = new Vector3();
-            ImagePlanePos = new Vector3(Width/2,Height/2, ImagePlaneDistance);
+            ImagePlanePos = new Vector2(Width/2,Height/2);
             brush = Brushes.Green;
             pen = new Pen(Color.Green);
+            ImagePlaneDistance = 100;
         }
 
         public Vector2 LocalSpace2ScreenSpace(Vector3 relativePosition)
         {
             double outX, outY;
 
-            outX = (ImagePlanePos.Z * relativePosition.X / relativePosition.Z) * 7 + ImagePlanePos.X;
+            outX = (ImagePlaneDistance * relativePosition.X / relativePosition.Z) * 7 + ImagePlanePos.X;
 
-            outY = (ImagePlanePos.Z * relativePosition.Y / relativePosition.Z) * 7 + ImagePlanePos.Y;
+            outY = (ImagePlaneDistance * relativePosition.Y / relativePosition.Z) * 7 + ImagePlanePos.Y;
 
             return new Vector2(outX, outY);
         }
@@ -77,8 +78,15 @@ namespace Graphics_Test
             }
         }
 
-        private void Clip(Line line)
-        {/*
+        public void ChangeImagePlaneDistance(double d)
+        {
+            ImagePlaneDistance += d;
+        }
+
+        private bool Clip(Line line)
+        {
+            return true;
+            /*
             double factor;
 
             Console.WriteLine($"Pt 1 was {line.point1.Repr()}, Pt 2 was {line.point2.Repr()}");
@@ -199,16 +207,13 @@ namespace Graphics_Test
 
     class Scene
     {
-        Camera MainCamera;
+        public Camera MainCamera;
         List<SceneObject> sceneObjects;
-
-        Vector2 Dimensions;
 
         public Scene(int Width, int Height)
         {
             sceneObjects = new List<SceneObject>();
             MainCamera = new Camera(Width, Height);
-            Dimensions = new Vector2(Width, Height);
         }
 
         public void AddSceneObject(SceneObject sceneObject)

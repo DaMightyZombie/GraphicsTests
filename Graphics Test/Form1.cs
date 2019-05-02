@@ -18,11 +18,9 @@ namespace Graphics_Test
         {
             InitializeComponent();
 
-            this.SetStyle(ControlStyles.UserPaint, true);
-            this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
-            //this.SetStyle(ControlStyles.DoubleBuffer, true);
-
-
+            SetStyle(ControlStyles.UserPaint, true);
+            SetStyle(ControlStyles.AllPaintingInWmPaint, true);
+            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
@@ -30,8 +28,6 @@ namespace Graphics_Test
             Graphics graphicsObj = e.Graphics;
 
             graphicsObj.DrawImage(myBitmap, 0, 0, myBitmap.Width, myBitmap.Height);
-
-            graphicsObj.Dispose();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -152,8 +148,14 @@ namespace Graphics_Test
             {
                 Scene.MoveScene(new Vector3(0, 0, -5));
             }
-
-            UpdateImage();
+            if (pressedKey == Keys.F1)
+            {
+                Scene.MainCamera.ChangeImagePlaneDistance(5);
+            }
+            else if (pressedKey == Keys.F2)
+            {
+                Scene.MainCamera.ChangeImagePlaneDistance(-5);
+            }
         }
 
         public void UpdateImage()
@@ -165,6 +167,13 @@ namespace Graphics_Test
             Scene.DrawToGraphicsObj(graphicsObj);
 
             Invalidate();
+
+            graphicsObj.Dispose();
+        }
+
+        private void Timer1_Tick(object sender, EventArgs e)
+        {
+            UpdateImage();
         }
     }
 }
