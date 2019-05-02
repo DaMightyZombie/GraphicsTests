@@ -39,7 +39,7 @@ namespace Graphics_Test
             Graphics graphicsObj;
             myBitmap = new Bitmap(ClientRectangle.Width,
                ClientRectangle.Height,
-               System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+               System.Drawing.Imaging.PixelFormat.Format16bppRgb565);
             graphicsObj = Graphics.FromImage(myBitmap);
             /*
             Pen myPen = new Pen(Color.Plum, 3);
@@ -48,6 +48,7 @@ namespace Graphics_Test
             */
             Scene = new Scene(ClientRectangle.Width, ClientRectangle.Height);
             /*
+            //Cube of points
             Scene.AddSceneObject(new Point(new Vector3(0, 0, 0)));
             Scene.AddSceneObject(new Point(new Vector3(0, 0, 100)));
             Scene.AddSceneObject(new Point(new Vector3(0, 100, 0)));
@@ -57,14 +58,14 @@ namespace Graphics_Test
             Scene.AddSceneObject(new Point(new Vector3(100, 100, 0)));
             Scene.AddSceneObject(new Point(new Vector3(100, 100, 100)));
             */
-            
+
+            //Cube of lines
             Scene.AddSceneObject(new Line(new Vector3(0, 0, 0), new Vector3(0, 0, 100)));
             Scene.AddSceneObject(new Line(new Vector3(0, 0, 0), new Vector3(0, 100, 0)));
             Scene.AddSceneObject(new Line(new Vector3(0, 0, 0), new Vector3(100, 0, 0)));
             Scene.AddSceneObject(new Line(new Vector3(100, 100, 0), new Vector3(100, 100, 100)));
             Scene.AddSceneObject(new Line(new Vector3(100, 100, 0), new Vector3(0, 100, 0)));
             Scene.AddSceneObject(new Line(new Vector3(100, 100, 0), new Vector3(100, 0, 0)));
-
             Scene.AddSceneObject(new Line(new Vector3(0, 100, 100), new Vector3(100, 100, 100)));
             Scene.AddSceneObject(new Line(new Vector3(0, 100, 100), new Vector3(0, 0, 100)));
             Scene.AddSceneObject(new Line(new Vector3(0, 100, 100), new Vector3(0, 100, 0)));
@@ -72,33 +73,55 @@ namespace Graphics_Test
             Scene.AddSceneObject(new Line(new Vector3(100, 0, 100), new Vector3(100, 100, 100)));
             Scene.AddSceneObject(new Line(new Vector3(100, 0, 100), new Vector3(100, 0, 0)));
 
+            //House
+            Scene.AddSceneObject(new Line(new Vector3(500, 0, 0), new Vector3(500, 0, 100)));
+            Scene.AddSceneObject(new Line(new Vector3(500, 0, 0), new Vector3(500, 100, 0)));
+            Scene.AddSceneObject(new Line(new Vector3(500, 0, 0), new Vector3(600, 0, 0)));
+            Scene.AddSceneObject(new Line(new Vector3(600, 100, 0), new Vector3(600, 100, 100)));
+            Scene.AddSceneObject(new Line(new Vector3(600, 100, 0), new Vector3(500, 100, 0)));
+            Scene.AddSceneObject(new Line(new Vector3(600, 100, 0), new Vector3(600, 0, 0)));
+            Scene.AddSceneObject(new Line(new Vector3(500, 100, 100), new Vector3(600, 100, 100)));
+            Scene.AddSceneObject(new Line(new Vector3(500, 100, 100), new Vector3(500, 0, 100)));
+            Scene.AddSceneObject(new Line(new Vector3(500, 100, 100), new Vector3(500, 100, 0)));
+            Scene.AddSceneObject(new Line(new Vector3(600, 0, 100), new Vector3(500, 0, 100)));
+            Scene.AddSceneObject(new Line(new Vector3(600, 0, 100), new Vector3(600, 100, 100)));
+            Scene.AddSceneObject(new Line(new Vector3(600, 0, 100), new Vector3(600, 0, 0)));
 
+            Scene.AddSceneObject(new Line(new Vector3(550, -50, 0), new Vector3(600, 0, 0)));
+            Scene.AddSceneObject(new Line(new Vector3(550, -50, 0), new Vector3(500, 0, 0)));
+            Scene.AddSceneObject(new Line(new Vector3(550, -50, 0), new Vector3(550, -50, 100)));
+            Scene.AddSceneObject(new Line(new Vector3(550, -50, 100), new Vector3(500, 0, 100)));
+            Scene.AddSceneObject(new Line(new Vector3(550, -50, 100), new Vector3(600, 0, 100)));
+
+            //vertical lines
             Scene.AddSceneObject(new Line(new Vector3(0, 100, 0), new Vector3(0, 100, 300)));
             Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(50, 100, 300)));
             Scene.AddSceneObject(new Line(new Vector3(100, 100, 0), new Vector3(100, 100, 300)));
             Scene.AddSceneObject(new Line(new Vector3(150, 100, 0), new Vector3(150, 100, 300)));
             Scene.AddSceneObject(new Line(new Vector3(200, 100, 0), new Vector3(200, 100, 300)));
+            Scene.AddSceneObject(new Line(new Vector3(-50, 100, 0), new Vector3(-50, 100, 300)));
+            Scene.AddSceneObject(new Line(new Vector3(-100, 100, 0), new Vector3(-100, 100, 300)));
+            Scene.AddSceneObject(new Line(new Vector3(-150, 100, 0), new Vector3(-150, 100, 300)));
+            Scene.AddSceneObject(new Line(new Vector3(-200, 100, 0), new Vector3(-200, 100, 300)));
 
-
+            //horizontal lines
             Scene.AddSceneObject(new Line(new Vector3(-300, 100, 0), new Vector3(300, 100, 0)));
             Scene.AddSceneObject(new Line(new Vector3(-300, 100, 50), new Vector3(300, 100, 50)));
             Scene.AddSceneObject(new Line(new Vector3(-300, 100, 100), new Vector3(300, 100, 100)));
             Scene.AddSceneObject(new Line(new Vector3(-300, 100, 150), new Vector3(300, 100, 150)));
             Scene.AddSceneObject(new Line(new Vector3(-300, 100, 200), new Vector3(300, 100, 200)));
 
+            //diagonals
             Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(350, 100, 300)));
-            Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(-350, 100, 300)));
+            Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(-250, 100, 300)));
 
 
-            Scene.MoveScene(new Vector3(-50, -50, 200));
+            Scene.MoveScene(new Vector3(-50, -50, 200.5d));
 
             Scene.DrawToGraphicsObj(graphicsObj);
             graphicsObj.Dispose();
 
             Console.WriteLine($"Screen Dimensions: {ClientRectangle.Width}, {ClientRectangle.Height}");
-            double a = 5;
-            double b = 500;
-            Console.WriteLine($"TEST: {a>b}");
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -113,7 +136,7 @@ namespace Graphics_Test
             {
                 Scene.MoveScene(new Vector3(5, 0, 0));
             }
-            else if (pressedKey == Keys.Up)
+            if (pressedKey == Keys.Up)
             {
                 Scene.MoveScene(new Vector3(0, 5, 0));
             }
@@ -121,7 +144,7 @@ namespace Graphics_Test
             {
                 Scene.MoveScene(new Vector3(0, -5, 0));
             }
-            else if (pressedKey == Keys.Add)
+            if (pressedKey == Keys.Add)
             {
                 Scene.MoveScene(new Vector3(0, 0, 5));
             }
@@ -141,7 +164,7 @@ namespace Graphics_Test
 
             Scene.DrawToGraphicsObj(graphicsObj);
 
-            Refresh();
+            Invalidate();
         }
     }
 }

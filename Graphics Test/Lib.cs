@@ -78,7 +78,7 @@ namespace Graphics_Test
         }
 
         private void Clip(Line line)
-        {
+        {/*
             double factor;
 
             Console.WriteLine($"Pt 1 was {line.point1.Repr()}, Pt 2 was {line.point2.Repr()}");
@@ -108,26 +108,28 @@ namespace Graphics_Test
                 {
                     line.point1.X = line.point1.X + factor * (line.point2.X - line.point1.X);
 
-                    line.point1.Z = line.point1.Z + factor * (line.point2.Z - line.point1.Z);
+                    line.point1.Y = line.point1.Y + factor * (line.point2.Y - line.point1.Y);
 
-                    line.point1.Y = ClippingPlaneFront;
+                    line.point1.Z = ClippingPlaneFront;
                 }
                 else
                 {
                     line.point2.X = line.point1.X + factor * (line.point2.X - line.point1.X);
 
-                    line.point2.Z = line.point1.Z + factor * (line.point2.Z - line.point1.Z);
+                    line.point2.Y = line.point1.Y + factor * (line.point2.Y - line.point1.Y);
 
-                    line.point2.Y = ClippingPlaneFront;
+                    line.point2.Z = ClippingPlaneFront;
                 }
             }
 
+            Console.WriteLine($"Z: {(int)line.point1.Z}");
             //is one end of the line behind the back clipping plane?
             if ((line.point1.Z > ClippingPlaneBack) || (line.point2.Z > ClippingPlaneBack))
             {
-                Console.WriteLine($"{line.point1.Z} > {ClippingPlaneBack}:");
+                Console.WriteLine($"Is {line.point1.Z} > {ClippingPlaneBack} ?");
                 Console.WriteLine(line.point1.Z > ClippingPlaneBack);
                 Console.WriteLine($"Points: {line.point1.Z}, {line.point2.Z}");
+
                 factor = (ClippingPlaneBack - line.point1.Y) / (line.point2.Y - line.point1.Y);
                 Console.WriteLine($"Back Factor is {factor}");
 
@@ -135,20 +137,20 @@ namespace Graphics_Test
                 {
                     line.point1.X = line.point1.X + factor * (line.point2.X - line.point1.X);
 
-                    line.point1.Z = line.point1.Z + factor * (line.point2.Z - line.point1.Z);
+                    line.point1.Y = line.point1.Y + factor * (line.point2.Y - line.point1.Y);
 
-                    line.point1.Y = ClippingPlaneBack;
+                    line.point1.Z = ClippingPlaneBack;
                 }
                 else
                 {
                     line.point2.X = line.point1.X + factor * (line.point2.X - line.point1.X);
 
-                    line.point2.Z = line.point1.Z + factor * (line.point2.Z - line.point1.Z);
+                    line.point2.Y = line.point1.Y + factor * (line.point2.Y - line.point1.Y);
 
-                    line.point2.Y = ClippingPlaneBack;
+                    line.point2.Z = ClippingPlaneBack;
                 }
             }
-            Console.WriteLine($"Pt 1 is {line.point1.Repr()}, Pt 2 is {line.point2.Repr()}");
+            Console.WriteLine($"Pt 1 is {line.point1.Repr()}, Pt 2 is {line.point2.Repr()}");*/
         }
     }
 
