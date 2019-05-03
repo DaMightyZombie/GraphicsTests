@@ -19,7 +19,7 @@ namespace Graphics_Test
         Vector2 ImagePlanePos;
 
         const double ClippingPlaneFront = 10d;
-        const double ClippingPlaneBack = 500d;
+        const double ClippingPlaneBack = 1000d;
 
         //int fov;
 
@@ -66,15 +66,14 @@ namespace Graphics_Test
             }
             else if (sceneObj is Line)
             {
-                Line line = (Line)sceneObj;
+                Line line = ((Line)sceneObj).Clone();
 
-                Line clippedLine = line.Clone();
-
-                Clip(clippedLine);
-
-                Vector2 pos1 = LocalSpace2ScreenSpace(clippedLine.point1);
-                Vector2 pos2 = LocalSpace2ScreenSpace(clippedLine.point2);
-                graphicsObj.DrawLine(pen, (float)pos1.X, (float)pos1.Y, (float)pos2.X, (float)pos2.Y);
+                if (Clip(line))
+                {
+                    Vector2 pos1 = LocalSpace2ScreenSpace(line.point1);
+                    Vector2 pos2 = LocalSpace2ScreenSpace(line.point2);
+                    graphicsObj.DrawLine(pen, (float)pos1.X, (float)pos1.Y, (float)pos2.X, (float)pos2.Y);
+                }
             }
         }
 
@@ -85,32 +84,24 @@ namespace Graphics_Test
 
         private bool Clip(Line line)
         {
-            return true;
-            /*
             double factor;
-
-            Console.WriteLine($"Pt 1 was {line.point1.Repr()}, Pt 2 was {line.point2.Repr()}");
 
             //are both ends of the line in front of the front clipping plane?
             if (line.point1.Z <= ClippingPlaneFront && line.point2.Z <= ClippingPlaneFront)
             {
-                return;
+                return false;
             }
 
             //are both ends of the line behind the back clipping plane?
             if (line.point1.Z >= ClippingPlaneBack && line.point2.Z >= ClippingPlaneBack)
             {
-                return;
+                return false;
             }
 
             //is one end of the line in front of the front clipping plane?
             if (line.point1.Z < ClippingPlaneFront || line.point2.Z < ClippingPlaneFront)
             {
-                factor = (ClippingPlaneFront - line.point1.Y) / (line.point2.Y - line.point1.Y);
-
-                Console.WriteLine($"Front Factor is {factor}");
-                Console.WriteLine(line.point1.Repr());
-
+                factor = (ClippingPlaneFront - line.point1.Z) / (line.point2.Z - line.point1.Z);
 
                 if (line.point1.Z < ClippingPlaneFront)
                 {
@@ -130,16 +121,10 @@ namespace Graphics_Test
                 }
             }
 
-            Console.WriteLine($"Z: {(int)line.point1.Z}");
             //is one end of the line behind the back clipping plane?
             if ((line.point1.Z > ClippingPlaneBack) || (line.point2.Z > ClippingPlaneBack))
             {
-                Console.WriteLine($"Is {line.point1.Z} > {ClippingPlaneBack} ?");
-                Console.WriteLine(line.point1.Z > ClippingPlaneBack);
-                Console.WriteLine($"Points: {line.point1.Z}, {line.point2.Z}");
-
-                factor = (ClippingPlaneBack - line.point1.Y) / (line.point2.Y - line.point1.Y);
-                Console.WriteLine($"Back Factor is {factor}");
+                factor = (ClippingPlaneBack - line.point1.Z) / (line.point2.Z - line.point1.Z);
 
                 if (line.point1.Z > ClippingPlaneBack)
                 {
@@ -158,7 +143,8 @@ namespace Graphics_Test
                     line.point2.Z = ClippingPlaneBack;
                 }
             }
-            Console.WriteLine($"Pt 1 is {line.point1.Repr()}, Pt 2 is {line.point2.Repr()}");*/
+
+            return true;
         }
     }
 
