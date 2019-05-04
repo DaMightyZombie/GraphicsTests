@@ -117,29 +117,29 @@ namespace Graphics_Test
         {
             Keys pressedKey = e.KeyCode;
 
-            if (pressedKey == Keys.Right)
+            if (pressedKey == Keys.D)
             {
-                Scene.MoveScene(new Vector3(-5, 0, 0));
+                Scene.MainCamera.Move(new Vector3(5, 0, 0));
             }
-            else if (pressedKey == Keys.Left)
+            else if (pressedKey == Keys.A)
             {
-                Scene.MoveScene(new Vector3(5, 0, 0));
+                Scene.MainCamera.Move(new Vector3(-5, 0, 0));
             }
-            if (pressedKey == Keys.Up)
+            if (pressedKey == Keys.Space)
             {
-                Scene.MoveScene(new Vector3(0, 5, 0));
+                Scene.MainCamera.Move(new Vector3(0, -5, 0));
             }
-            else if (pressedKey == Keys.Down)
+            else if (pressedKey == Keys.ControlKey)
             {
-                Scene.MoveScene(new Vector3(0, -5, 0));
+                Scene.MainCamera.Move(new Vector3(0, 5, 0));
             }
-            if (pressedKey == Keys.Add)
+            if (pressedKey == Keys.S)
             {
-                Scene.MoveScene(new Vector3(0, 0, 5));
+                Scene.MainCamera.Move(new Vector3(0, 0, -5));
             }
-            else if (pressedKey == Keys.Subtract)
+            else if (pressedKey == Keys.W)
             {
-                Scene.MoveScene(new Vector3(0, 0, -5));
+                Scene.MainCamera.Move(new Vector3(0, 0, 5));
             }
             if (pressedKey == Keys.F1)
             {
