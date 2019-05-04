@@ -101,7 +101,7 @@ namespace Graphics_Test
 
             x = costheta.Y * (sintheta.Z * delta.Y + costheta.Z * delta.X) - sintheta.Y * delta.Z;
             y = sintheta.X * (costheta.Y * delta.Z + sintheta.Y * (sintheta.Z * delta.Y + costheta.Z * delta.X)) + costheta.X * (costheta.Z * delta.Y - sintheta.Z * delta.X);
-            z = costheta.X * (costheta.Y * delta.Z + sintheta.Y * (sintheta.Z * delta.Y + costheta.Z * delta.X)) + sintheta.X * (costheta.Z * delta.Y - sintheta.Z * delta.X);
+            z = costheta.X * (costheta.Y * delta.Z + sintheta.Y * (sintheta.Z * delta.Y + costheta.Z * delta.X)) - sintheta.X * (costheta.Z * delta.Y - sintheta.Z * delta.X);
 
             return new Vector3(x, y, z);
         }
@@ -193,6 +193,11 @@ namespace Graphics_Test
         }
 
         public void Move(Vector3 direction)
+        {
+            position += direction;
+        }
+
+        public void MoveLocal(Vector3 direction)
         {
             position += direction;
         }
