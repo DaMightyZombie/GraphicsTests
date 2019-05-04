@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Graphics_Test
@@ -54,7 +48,7 @@ namespace Graphics_Test
             Scene.AddSceneObject(new Point(new Vector3(100, 100, 0)));
             Scene.AddSceneObject(new Point(new Vector3(100, 100, 100)));
             */
-
+            
             //Cube of lines
             Scene.AddSceneObject(new Line(new Vector3(0, 0, 0), new Vector3(0, 0, 100)));
             Scene.AddSceneObject(new Line(new Vector3(0, 0, 0), new Vector3(0, 100, 0)));
@@ -111,13 +105,12 @@ namespace Graphics_Test
             Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(350, 100, 300)));
             Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(-250, 100, 300)));
 
-
-            Scene.MoveScene(new Vector3(-50, -50, 200.5d));
+            Scene.MainCamera.SetPos(new Vector3(50, 50, -200));
 
             Scene.DrawToGraphicsObj(graphicsObj);
             graphicsObj.Dispose();
 
-            Console.WriteLine($"Screen Dimensions: {ClientRectangle.Width}, {ClientRectangle.Height}");
+            Text = $"Resolution: {ClientRectangle.Width}, {ClientRectangle.Height}";
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)

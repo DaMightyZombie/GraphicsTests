@@ -4,40 +4,34 @@ using System.Drawing;
 
 namespace Graphics_Test
 {
-    class Lib
-    {
-
-    }
-
     class Camera
     {
         //Postition of the camera
-        //Vector3 position;
+        Vector3 position;
         //Rotation of the camera
-        //Vector3 rotation;
+        Vector3 theta;
         //Position of the image plane relative to the camera
         Vector2 ImagePlanePos;
 
         const double ClippingPlaneFront = 10d;
         const double ClippingPlaneBack = 1000d;
 
-        //int fov;
-
-        //int width, height;
+        private Vector3 costheta;
+        private Vector3 sintheta;
 
         public double ImagePlaneDistance;
 
         private readonly Brush brush;
         private readonly Pen pen;
 
-        public Camera(double Width, double Height)
+        public Camera(double Width, double Height, Vector3 _position, Vector3 _rotation, double _ImagePlaneDistance)
         {
-            //position = new Vector3();
-            //rotation = new Vector3();
             ImagePlanePos = new Vector2(Width/2,Height/2);
             brush = Brushes.Green;
             pen = new Pen(Color.Green);
-            ImagePlaneDistance = 100;
+            ImagePlaneDistance = _ImagePlaneDistance;
+            SetAng(_rotation);
+            position = _position;
         }
 
         public Vector2 LocalSpace2ScreenSpace(Vector3 relativePosition)
@@ -56,33 +50,72 @@ namespace Graphics_Test
             if (sceneObj is Point)
             {
                 Point point = (Point)sceneObj;
+                Point eyePoint = new Point();
 
+                //Translate the Worldspace coordinates to eyespace
+                World2Eye(point, eyePoint);
+                
                 //Check if the point is between the two clipping planes
-                if (ClippingPlaneFront < point.position.Z && point.position.Z < ClippingPlaneBack)
+                if (Eye2Clipped(eyePoint))
                 {
-                    Vector2 pos = LocalSpace2ScreenSpace(((Point)sceneObj).position);
+                    Vector2 pos = LocalSpace2ScreenSpace(eyePoint.position);
                     graphicsObj.FillRectangle(brush, (float)pos.X, (float)pos.Y, 3, 3);
                 }
+                
             }
             else if (sceneObj is Line)
             {
-                Line line = ((Line)sceneObj).Clone();
+                Line line = (Line)sceneObj;
+                Line eyeLine = new Line();
 
-                if (Clip(line))
+                //Translate the Worldspace coordinates to eyespace
+                World2Eye(line, eyeLine);
+                
+                //Clip the line if nessecary
+                if (Eye2Clipped(eyeLine))
                 {
-                    Vector2 pos1 = LocalSpace2ScreenSpace(line.point1);
-                    Vector2 pos2 = LocalSpace2ScreenSpace(line.point2);
+                    Vector2 pos1 = LocalSpace2ScreenSpace(eyeLine.point1);
+                    Vector2 pos2 = LocalSpace2ScreenSpace(eyeLine.point2);
                     graphicsObj.DrawLine(pen, (float)pos1.X, (float)pos1.Y, (float)pos2.X, (float)pos2.Y);
                 }
+                
             }
         }
 
-        public void ChangeImagePlaneDistance(double d)
+        private void World2Eye(Point point, Point eyePoint)
         {
-            ImagePlaneDistance += d;
+            eyePoint.position = VecWorld2Eye(point.position);
         }
 
-        private bool Clip(Line line)
+        private void World2Eye(Line line, Line eyeLine)
+        {
+            eyeLine.point1 = VecWorld2Eye(line.point1);
+            eyeLine.point2 = VecWorld2Eye(line.point2);
+        }
+
+        private Vector3 VecWorld2Eye(Vector3 world)
+        {
+            Vector3 delta = world - position;
+
+            double x, y, z;
+
+            x = costheta.Y * (sintheta.Z * delta.Y + costheta.Z * delta.X) - sintheta.Y * delta.Z;
+            y = sintheta.X * (costheta.Y * delta.Z + sintheta.Y * (sintheta.Z * delta.Y + costheta.Z * delta.X)) + costheta.X * (costheta.Z * delta.Y - sintheta.Z * delta.X);
+            z = costheta.X * (costheta.Y * delta.Z + sintheta.Y * (sintheta.Z * delta.Y + costheta.Z * delta.X)) + sintheta.X * (costheta.Z * delta.Y - sintheta.Z * delta.X);
+
+            return new Vector3(x, y, z);
+        }
+
+        private bool Eye2Clipped(Point point)
+        {
+            if (ClippingPlaneFront < point.position.Z && point.position.Z < ClippingPlaneBack)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private bool Eye2Clipped(Line line)
         {
             double factor;
 
@@ -146,6 +179,28 @@ namespace Graphics_Test
 
             return true;
         }
+
+        public void SetAng(Vector3 ang)
+        {
+            theta = ang;
+            costheta = theta.MemberwiseCosine();
+            sintheta = theta.MemberwiseSine();
+        }
+
+        public void SetPos(Vector3 pos)
+        {
+            position = pos;
+        }
+
+        public void Move(Vector3 direction)
+        {
+            position += direction;
+        }
+
+        public void ChangeImagePlaneDistance(double d)
+        {
+            ImagePlaneDistance += d;
+        }
     }
 
     struct Vector2
@@ -185,9 +240,32 @@ namespace Graphics_Test
             return $"({X}, {Y}, {Z})";
         }
 
-        public static Vector3 operator + (Vector3 a, Vector3 b)
+        public static Vector3 operator +(Vector3 a, Vector3 b)
         {
-            return new Vector3(a.X+b.X, a.Y+b.Y, a.Z+b.Z);
+            return new Vector3(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+        }
+
+        public static Vector3 operator -(Vector3 a, Vector3 b)
+        {
+            return new Vector3(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+        }
+
+        public Vector3 MemberwiseSine()
+        {
+            Vector3 result = new Vector3();
+            result.X = Math.Sin(this.X);
+            result.Y = Math.Sin(this.Y);
+            result.Z = Math.Sin(this.Z);
+            return result;
+        }
+
+        public Vector3 MemberwiseCosine()
+        {
+            Vector3 result = new Vector3();
+            result.X = Math.Cos(this.X);
+            result.Y = Math.Cos(this.Y);
+            result.Z = Math.Cos(this.Z);
+            return result;
         }
     }
 
@@ -199,7 +277,7 @@ namespace Graphics_Test
         public Scene(int Width, int Height)
         {
             sceneObjects = new List<SceneObject>();
-            MainCamera = new Camera(Width, Height);
+            MainCamera = new Camera(Width, Height, new Vector3(), new Vector3(), 100);
         }
 
         public void AddSceneObject(SceneObject sceneObject)
@@ -237,6 +315,11 @@ namespace Graphics_Test
             position = _position;
         }
 
+        public Point()
+        {
+            position = new Vector3();
+        }
+
         public override void Move(Vector3 direction)
         {
             position += direction;
@@ -250,6 +333,12 @@ namespace Graphics_Test
         {
             point1 = _point1;
             point2 = _point2;
+        }
+
+        public Line()
+        {
+            point1 = new Vector3();
+            point2 = new Vector3();
         }
 
         public override void Move(Vector3 direction)
