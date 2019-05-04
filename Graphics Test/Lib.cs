@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace Graphics_Test
 {
@@ -24,6 +25,17 @@ namespace Graphics_Test
         private readonly Brush brush;
         private readonly Pen pen;
 
+        private int SelectedIconIndex;
+
+        private static readonly Icon[] PointIcons = {
+            new Icon(Application.StartupPath + @"\img\point_dot.ico"),
+            new Icon(Application.StartupPath + @"\img\point_circle.ico"),
+            new Icon(Application.StartupPath + @"\img\point_cross.ico"),
+            new Icon(Application.StartupPath + @"\img\point_cross2.ico")
+        };
+
+        private Icon SelectedPointIcon;
+
         public Camera(double Width, double Height, Vector3 _position, Vector3 _rotation, double _ImagePlaneDistance)
         {
             ImagePlanePos = new Vector2(Width/2,Height/2);
@@ -32,15 +44,17 @@ namespace Graphics_Test
             ImagePlaneDistance = _ImagePlaneDistance;
             SetAng(_rotation);
             position = _position;
+            SelectedPointIcon = PointIcons[0];
+            SelectedIconIndex = 0;
         }
 
         public Vector2 LocalSpace2ScreenSpace(Vector3 relativePosition)
         {
             double outX, outY;
 
-            outX = (ImagePlaneDistance * relativePosition.X / relativePosition.Z) * 7 + ImagePlanePos.X;
+            outX = ImagePlaneDistance * relativePosition.X / relativePosition.Z + ImagePlanePos.X;
 
-            outY = (ImagePlaneDistance * relativePosition.Y / relativePosition.Z) * 7 + ImagePlanePos.Y;
+            outY = ImagePlaneDistance * relativePosition.Y / relativePosition.Z + ImagePlanePos.Y;
 
             return new Vector2(outX, outY);
         }
@@ -59,9 +73,8 @@ namespace Graphics_Test
                 if (Eye2Clipped(eyePoint))
                 {
                     Vector2 pos = LocalSpace2ScreenSpace(eyePoint.position);
-                    graphicsObj.FillRectangle(brush, (float)pos.X, (float)pos.Y, 3, 3);
+                    graphicsObj.DrawIconUnstretched(SelectedPointIcon, new Rectangle((int)pos.X, (int)pos.Y, 5, 5));
                 }
-                
             }
             else if (sceneObj is Line)
             {
@@ -211,6 +224,13 @@ namespace Graphics_Test
         {
             ImagePlaneDistance += d;
         }
+
+        public void NextDotIcon()
+        {
+            SelectedIconIndex++;
+            SelectedIconIndex %= 4;
+            SelectedPointIcon = PointIcons[SelectedIconIndex];
+        }
     }
 
     struct Vector2
@@ -287,7 +307,7 @@ namespace Graphics_Test
         public Scene(int Width, int Height)
         {
             sceneObjects = new List<SceneObject>();
-            MainCamera = new Camera(Width, Height, new Vector3(), new Vector3(), 100);
+            MainCamera = new Camera(Width, Height, new Vector3(), new Vector3(), 600);
         }
 
         public void AddSceneObject(SceneObject sceneObject)
@@ -309,6 +329,11 @@ namespace Graphics_Test
             {
                 item.Move(direction);
             }
+        }
+
+        public void ClearScene()
+        {
+            sceneObjects.Clear();
         }
     }
 

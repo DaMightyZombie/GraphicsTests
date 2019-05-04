@@ -35,6 +35,7 @@ namespace Graphics_Test
             graphicsObj.DrawEllipse(myPen, rectangleObj);
             */
             Scene = new Scene(ClientRectangle.Width, ClientRectangle.Height);
+            #region point test
             /*
             //Cube of points
             Scene.AddSceneObject(new Point(new Vector3(0, 0, 0)));
@@ -46,7 +47,9 @@ namespace Graphics_Test
             Scene.AddSceneObject(new Point(new Vector3(100, 100, 0)));
             Scene.AddSceneObject(new Point(new Vector3(100, 100, 100)));
             */
-            
+            #endregion
+            #region line test
+            /*
             //Cube of lines
             Scene.AddSceneObject(new Line(new Vector3(0, 0, 0), new Vector3(0, 0, 100)));
             Scene.AddSceneObject(new Line(new Vector3(0, 0, 0), new Vector3(0, 100, 0)));
@@ -102,6 +105,21 @@ namespace Graphics_Test
             //diagonals
             Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(350, 100, 300)));
             Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(-250, 100, 300)));
+            */
+            #endregion
+            #region plotter test
+            
+            const int dim = 20;
+
+            for (int i = 0; i < dim; i++)
+            {
+                for (int j = 0; j < dim; j++)
+                {
+                    Scene.AddSceneObject(new Point(new Vector3(i*10, (Math.Sin(i) + Math.Sin(j)) * 3 + 100, j * 10)));
+                }
+            }
+            
+            #endregion
 
             Scene.MainCamera.SetPos(new Vector3(50, 50, -200));
 
@@ -170,6 +188,10 @@ namespace Graphics_Test
             else if (pressedKey == Keys.Down)
             {
                 Scene.MainCamera.Rotate(new Vector3(-0.03, 0, 0));
+            }
+            else if (pressedKey == Keys.F3)
+            {
+                Scene.MainCamera.NextDotIcon();
             }
         }
 
