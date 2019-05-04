@@ -19,9 +19,7 @@ namespace Graphics_Test
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            Graphics graphicsObj = e.Graphics;
-
-            graphicsObj.DrawImage(myBitmap, 0, 0, myBitmap.Width, myBitmap.Height);
+            e.Graphics.DrawImage(myBitmap, 0, 0, myBitmap.Width, myBitmap.Height);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -116,7 +114,7 @@ namespace Graphics_Test
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             Keys pressedKey = e.KeyCode;
-
+            
             if (pressedKey == Keys.D)
             {
                 Scene.MainCamera.Move(new Vector3(5, 0, 0));
@@ -125,7 +123,7 @@ namespace Graphics_Test
             {
                 Scene.MainCamera.Move(new Vector3(-5, 0, 0));
             }
-            if (pressedKey == Keys.Space)
+            else if (pressedKey == Keys.Space)
             {
                 Scene.MainCamera.Move(new Vector3(0, -5, 0));
             }
@@ -133,7 +131,7 @@ namespace Graphics_Test
             {
                 Scene.MainCamera.Move(new Vector3(0, 5, 0));
             }
-            if (pressedKey == Keys.S)
+            else if (pressedKey == Keys.S)
             {
                 Scene.MainCamera.Move(new Vector3(0, 0, -5));
             }
@@ -141,13 +139,37 @@ namespace Graphics_Test
             {
                 Scene.MainCamera.Move(new Vector3(0, 0, 5));
             }
-            if (pressedKey == Keys.F1)
+            else if (pressedKey == Keys.F1)
             {
                 Scene.MainCamera.ChangeImagePlaneDistance(5);
             }
             else if (pressedKey == Keys.F2)
             {
                 Scene.MainCamera.ChangeImagePlaneDistance(-5);
+            }
+            else if (pressedKey == Keys.Q)
+            {
+                Scene.MainCamera.Rotate(new Vector3(0, 0, -0.03));
+            }
+            else if (pressedKey == Keys.E)
+            {
+                Scene.MainCamera.Rotate(new Vector3(0, 0, 0.03));
+            }
+            else if (pressedKey == Keys.Right)
+            {
+                Scene.MainCamera.Rotate(new Vector3(0, 0.03, 0));
+            }
+            else if (pressedKey == Keys.Left)
+            {
+                Scene.MainCamera.Rotate(new Vector3(0, -0.03, 0));
+            }
+            else if (pressedKey == Keys.Up)
+            {
+                Scene.MainCamera.Rotate(new Vector3(0.03, 0, 0));
+            }
+            else if (pressedKey == Keys.Down)
+            {
+                Scene.MainCamera.Rotate(new Vector3(-0.03, 0, 0));
             }
         }
 

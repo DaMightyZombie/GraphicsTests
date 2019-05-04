@@ -197,6 +197,11 @@ namespace Graphics_Test
             position += direction;
         }
 
+        public void Rotate(Vector3 rotation)
+        {
+            SetAng(theta + rotation);
+        }
+
         public void ChangeImagePlaneDistance(double d)
         {
             ImagePlaneDistance += d;
