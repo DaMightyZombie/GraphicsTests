@@ -35,90 +35,114 @@ namespace Graphics_Test
             graphicsObj.DrawEllipse(myPen, rectangleObj);
             */
             Scene = new Scene(ClientRectangle.Width, ClientRectangle.Height);
+
+            int SceneIndex = 3;
+
             #region point test
-            /*
-            //Cube of points
-            Scene.AddSceneObject(new Point(new Vector3(0, 0, 0)));
-            Scene.AddSceneObject(new Point(new Vector3(0, 0, 100)));
-            Scene.AddSceneObject(new Point(new Vector3(0, 100, 0)));
-            Scene.AddSceneObject(new Point(new Vector3(0, 100, 100)));
-            Scene.AddSceneObject(new Point(new Vector3(100, 0, 0)));
-            Scene.AddSceneObject(new Point(new Vector3(100, 0, 100)));
-            Scene.AddSceneObject(new Point(new Vector3(100, 100, 0)));
-            Scene.AddSceneObject(new Point(new Vector3(100, 100, 100)));
-            */
+            if (SceneIndex == 0)
+            {
+                //Cube of points
+                Scene.AddSceneObject(new Point(new Vector3(0, 0, 0)));
+                Scene.AddSceneObject(new Point(new Vector3(0, 0, 100)));
+                Scene.AddSceneObject(new Point(new Vector3(0, 100, 0)));
+                Scene.AddSceneObject(new Point(new Vector3(0, 100, 100)));
+                Scene.AddSceneObject(new Point(new Vector3(100, 0, 0)));
+                Scene.AddSceneObject(new Point(new Vector3(100, 0, 100)));
+                Scene.AddSceneObject(new Point(new Vector3(100, 100, 0)));
+                Scene.AddSceneObject(new Point(new Vector3(100, 100, 100)));
+            }
             #endregion
             #region line test
-            /*
-            //Cube of lines
-            Scene.AddSceneObject(new Line(new Vector3(0, 0, 0), new Vector3(0, 0, 100)));
-            Scene.AddSceneObject(new Line(new Vector3(0, 0, 0), new Vector3(0, 100, 0)));
-            Scene.AddSceneObject(new Line(new Vector3(0, 0, 0), new Vector3(100, 0, 0)));
-            Scene.AddSceneObject(new Line(new Vector3(100, 100, 0), new Vector3(100, 100, 100)));
-            Scene.AddSceneObject(new Line(new Vector3(100, 100, 0), new Vector3(0, 100, 0)));
-            Scene.AddSceneObject(new Line(new Vector3(100, 100, 0), new Vector3(100, 0, 0)));
-            Scene.AddSceneObject(new Line(new Vector3(0, 100, 100), new Vector3(100, 100, 100)));
-            Scene.AddSceneObject(new Line(new Vector3(0, 100, 100), new Vector3(0, 0, 100)));
-            Scene.AddSceneObject(new Line(new Vector3(0, 100, 100), new Vector3(0, 100, 0)));
-            Scene.AddSceneObject(new Line(new Vector3(100, 0, 100), new Vector3(0, 0, 100)));
-            Scene.AddSceneObject(new Line(new Vector3(100, 0, 100), new Vector3(100, 100, 100)));
-            Scene.AddSceneObject(new Line(new Vector3(100, 0, 100), new Vector3(100, 0, 0)));
-
-            //House
-            Scene.AddSceneObject(new Line(new Vector3(500, 0, 0), new Vector3(500, 0, 100)));
-            Scene.AddSceneObject(new Line(new Vector3(500, 0, 0), new Vector3(500, 100, 0)));
-            Scene.AddSceneObject(new Line(new Vector3(500, 0, 0), new Vector3(600, 0, 0)));
-            Scene.AddSceneObject(new Line(new Vector3(600, 100, 0), new Vector3(600, 100, 100)));
-            Scene.AddSceneObject(new Line(new Vector3(600, 100, 0), new Vector3(500, 100, 0)));
-            Scene.AddSceneObject(new Line(new Vector3(600, 100, 0), new Vector3(600, 0, 0)));
-            Scene.AddSceneObject(new Line(new Vector3(500, 100, 100), new Vector3(600, 100, 100)));
-            Scene.AddSceneObject(new Line(new Vector3(500, 100, 100), new Vector3(500, 0, 100)));
-            Scene.AddSceneObject(new Line(new Vector3(500, 100, 100), new Vector3(500, 100, 0)));
-            Scene.AddSceneObject(new Line(new Vector3(600, 0, 100), new Vector3(500, 0, 100)));
-            Scene.AddSceneObject(new Line(new Vector3(600, 0, 100), new Vector3(600, 100, 100)));
-            Scene.AddSceneObject(new Line(new Vector3(600, 0, 100), new Vector3(600, 0, 0)));
-
-            Scene.AddSceneObject(new Line(new Vector3(550, -50, 0), new Vector3(600, 0, 0)));
-            Scene.AddSceneObject(new Line(new Vector3(550, -50, 0), new Vector3(500, 0, 0)));
-            Scene.AddSceneObject(new Line(new Vector3(550, -50, 0), new Vector3(550, -50, 100)));
-            Scene.AddSceneObject(new Line(new Vector3(550, -50, 100), new Vector3(500, 0, 100)));
-            Scene.AddSceneObject(new Line(new Vector3(550, -50, 100), new Vector3(600, 0, 100)));
-
-            //vertical lines
-            Scene.AddSceneObject(new Line(new Vector3(0, 100, 0), new Vector3(0, 100, 300)));
-            Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(50, 100, 300)));
-            Scene.AddSceneObject(new Line(new Vector3(100, 100, 0), new Vector3(100, 100, 300)));
-            Scene.AddSceneObject(new Line(new Vector3(150, 100, 0), new Vector3(150, 100, 300)));
-            Scene.AddSceneObject(new Line(new Vector3(200, 100, 0), new Vector3(200, 100, 300)));
-            Scene.AddSceneObject(new Line(new Vector3(-50, 100, 0), new Vector3(-50, 100, 300)));
-            Scene.AddSceneObject(new Line(new Vector3(-100, 100, 0), new Vector3(-100, 100, 300)));
-            Scene.AddSceneObject(new Line(new Vector3(-150, 100, 0), new Vector3(-150, 100, 300)));
-            Scene.AddSceneObject(new Line(new Vector3(-200, 100, 0), new Vector3(-200, 100, 300)));
-
-            //horizontal lines
-            Scene.AddSceneObject(new Line(new Vector3(-300, 100, 0), new Vector3(300, 100, 0)));
-            Scene.AddSceneObject(new Line(new Vector3(-300, 100, 50), new Vector3(300, 100, 50)));
-            Scene.AddSceneObject(new Line(new Vector3(-300, 100, 100), new Vector3(300, 100, 100)));
-            Scene.AddSceneObject(new Line(new Vector3(-300, 100, 150), new Vector3(300, 100, 150)));
-            Scene.AddSceneObject(new Line(new Vector3(-300, 100, 200), new Vector3(300, 100, 200)));
-
-            //diagonals
-            Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(350, 100, 300)));
-            Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(-250, 100, 300)));
-            */
-            #endregion
-            #region plotter test
-            
-            const int dim = 20;
-
-            for (int i = 0; i < dim; i++)
+            else if (SceneIndex == 1)
             {
-                for (int j = 0; j < dim; j++)
+                //Cube of lines
+                Scene.AddSceneObject(new Line(new Vector3(0, 0, 0), new Vector3(0, 0, 100)));
+                Scene.AddSceneObject(new Line(new Vector3(0, 0, 0), new Vector3(0, 100, 0)));
+                Scene.AddSceneObject(new Line(new Vector3(0, 0, 0), new Vector3(100, 0, 0)));
+                Scene.AddSceneObject(new Line(new Vector3(100, 100, 0), new Vector3(100, 100, 100)));
+                Scene.AddSceneObject(new Line(new Vector3(100, 100, 0), new Vector3(0, 100, 0)));
+                Scene.AddSceneObject(new Line(new Vector3(100, 100, 0), new Vector3(100, 0, 0)));
+                Scene.AddSceneObject(new Line(new Vector3(0, 100, 100), new Vector3(100, 100, 100)));
+                Scene.AddSceneObject(new Line(new Vector3(0, 100, 100), new Vector3(0, 0, 100)));
+                Scene.AddSceneObject(new Line(new Vector3(0, 100, 100), new Vector3(0, 100, 0)));
+                Scene.AddSceneObject(new Line(new Vector3(100, 0, 100), new Vector3(0, 0, 100)));
+                Scene.AddSceneObject(new Line(new Vector3(100, 0, 100), new Vector3(100, 100, 100)));
+                Scene.AddSceneObject(new Line(new Vector3(100, 0, 100), new Vector3(100, 0, 0)));
+
+                //House
+                Scene.AddSceneObject(new Line(new Vector3(500, 0, 0), new Vector3(500, 0, 100)));
+                Scene.AddSceneObject(new Line(new Vector3(500, 0, 0), new Vector3(500, 100, 0)));
+                Scene.AddSceneObject(new Line(new Vector3(500, 0, 0), new Vector3(600, 0, 0)));
+                Scene.AddSceneObject(new Line(new Vector3(600, 100, 0), new Vector3(600, 100, 100)));
+                Scene.AddSceneObject(new Line(new Vector3(600, 100, 0), new Vector3(500, 100, 0)));
+                Scene.AddSceneObject(new Line(new Vector3(600, 100, 0), new Vector3(600, 0, 0)));
+                Scene.AddSceneObject(new Line(new Vector3(500, 100, 100), new Vector3(600, 100, 100)));
+                Scene.AddSceneObject(new Line(new Vector3(500, 100, 100), new Vector3(500, 0, 100)));
+                Scene.AddSceneObject(new Line(new Vector3(500, 100, 100), new Vector3(500, 100, 0)));
+                Scene.AddSceneObject(new Line(new Vector3(600, 0, 100), new Vector3(500, 0, 100)));
+                Scene.AddSceneObject(new Line(new Vector3(600, 0, 100), new Vector3(600, 100, 100)));
+                Scene.AddSceneObject(new Line(new Vector3(600, 0, 100), new Vector3(600, 0, 0)));
+
+                Scene.AddSceneObject(new Line(new Vector3(550, -50, 0), new Vector3(600, 0, 0)));
+                Scene.AddSceneObject(new Line(new Vector3(550, -50, 0), new Vector3(500, 0, 0)));
+                Scene.AddSceneObject(new Line(new Vector3(550, -50, 0), new Vector3(550, -50, 100)));
+                Scene.AddSceneObject(new Line(new Vector3(550, -50, 100), new Vector3(500, 0, 100)));
+                Scene.AddSceneObject(new Line(new Vector3(550, -50, 100), new Vector3(600, 0, 100)));
+
+                //vertical lines
+                Scene.AddSceneObject(new Line(new Vector3(0, 100, 0), new Vector3(0, 100, 300)));
+                Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(50, 100, 300)));
+                Scene.AddSceneObject(new Line(new Vector3(100, 100, 0), new Vector3(100, 100, 300)));
+                Scene.AddSceneObject(new Line(new Vector3(150, 100, 0), new Vector3(150, 100, 300)));
+                Scene.AddSceneObject(new Line(new Vector3(200, 100, 0), new Vector3(200, 100, 300)));
+                Scene.AddSceneObject(new Line(new Vector3(-50, 100, 0), new Vector3(-50, 100, 300)));
+                Scene.AddSceneObject(new Line(new Vector3(-100, 100, 0), new Vector3(-100, 100, 300)));
+                Scene.AddSceneObject(new Line(new Vector3(-150, 100, 0), new Vector3(-150, 100, 300)));
+                Scene.AddSceneObject(new Line(new Vector3(-200, 100, 0), new Vector3(-200, 100, 300)));
+
+                //horizontal lines
+                Scene.AddSceneObject(new Line(new Vector3(-300, 100, 0), new Vector3(300, 100, 0)));
+                Scene.AddSceneObject(new Line(new Vector3(-300, 100, 50), new Vector3(300, 100, 50)));
+                Scene.AddSceneObject(new Line(new Vector3(-300, 100, 100), new Vector3(300, 100, 100)));
+                Scene.AddSceneObject(new Line(new Vector3(-300, 100, 150), new Vector3(300, 100, 150)));
+                Scene.AddSceneObject(new Line(new Vector3(-300, 100, 200), new Vector3(300, 100, 200)));
+
+                //diagonals
+                Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(350, 100, 300)));
+                Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(-250, 100, 300)));
+            }
+            #endregion
+            #region plotter test 3d sine
+            else if (SceneIndex == 2)
+            {
+                const int dim = 25;
+
+                for (int i = 0; i < dim; i++)
                 {
-                    Scene.AddSceneObject(new Point(new Vector3(i*10, (Math.Sin(i) + Math.Sin(j)) * 3 + 100, j * 10)));
+                    for (int j = 0; j < dim; j++)
+                    {
+                        //3d sine
+                        Scene.AddSceneObject(new Point(new Vector3(i * 10, (Math.Sin(i) + Math.Sin(j)) * 3 + 100, j * 10)));
+                    }
                 }
             }
-            
+            #endregion
+            #region plotter test ripple
+            else if (SceneIndex == 3)
+            {
+                const int dim = 25;
+                const int halfdim = dim / 2;
+
+                for (int i = 0; i < dim; i++)
+                {
+                    for (int j = 0; j < dim; j++)
+                    {
+                        //ripple
+                        double distance = Math.Sqrt((i-halfdim)*(i-halfdim) + (j-halfdim)*(j-halfdim));
+                        Scene.AddSceneObject(new Point(new Vector3(i * 15, -Math.Sin(distance)*60/distance, j * 15)));
+                    }
+                }
+            }
             #endregion
 
             Scene.MainCamera.SetPos(new Vector3(50, 50, -200));
@@ -135,27 +159,27 @@ namespace Graphics_Test
             
             if (pressedKey == Keys.D)
             {
-                Scene.MainCamera.Move(new Vector3(5, 0, 0));
+                Scene.MainCamera.MoveLocal(new Vector3(5, 0, 0));
             }
             else if (pressedKey == Keys.A)
             {
-                Scene.MainCamera.Move(new Vector3(-5, 0, 0));
+                Scene.MainCamera.MoveLocal(new Vector3(-5, 0, 0));
             }
             else if (pressedKey == Keys.Space)
             {
-                Scene.MainCamera.Move(new Vector3(0, -5, 0));
+                Scene.MainCamera.MoveLocal(new Vector3(0, -5, 0));
             }
             else if (pressedKey == Keys.ControlKey)
             {
-                Scene.MainCamera.Move(new Vector3(0, 5, 0));
+                Scene.MainCamera.MoveLocal(new Vector3(0, 5, 0));
             }
             else if (pressedKey == Keys.S)
             {
-                Scene.MainCamera.Move(new Vector3(0, 0, -5));
+                Scene.MainCamera.MoveLocal(new Vector3(0, 0, -5));
             }
             else if (pressedKey == Keys.W)
             {
-                Scene.MainCamera.Move(new Vector3(0, 0, 5));
+                Scene.MainCamera.MoveLocal(new Vector3(0, 0, 5));
             }
             else if (pressedKey == Keys.F1)
             {
@@ -164,14 +188,6 @@ namespace Graphics_Test
             else if (pressedKey == Keys.F2)
             {
                 Scene.MainCamera.ChangeImagePlaneDistance(-5);
-            }
-            else if (pressedKey == Keys.Q)
-            {
-                Scene.MainCamera.Rotate(new Vector3(0, 0, -0.03));
-            }
-            else if (pressedKey == Keys.E)
-            {
-                Scene.MainCamera.Rotate(new Vector3(0, 0, 0.03));
             }
             else if (pressedKey == Keys.Right)
             {

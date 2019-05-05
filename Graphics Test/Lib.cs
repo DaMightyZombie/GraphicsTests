@@ -8,9 +8,9 @@ namespace Graphics_Test
     class Camera
     {
         //Postition of the camera
-        Vector3 position;
+        public Vector3 position;
         //Rotation of the camera
-        Vector3 theta;
+        public Vector3 theta;
         //Position of the image plane relative to the camera
         Vector2 ImagePlanePos;
 
@@ -73,7 +73,8 @@ namespace Graphics_Test
                 if (Eye2Clipped(eyePoint))
                 {
                     Vector2 pos = LocalSpace2ScreenSpace(eyePoint.position);
-                    graphicsObj.DrawIconUnstretched(SelectedPointIcon, new Rectangle((int)pos.X, (int)pos.Y, 5, 5));
+                    //graphicsObj.DrawIconUnstretched(SelectedPointIcon, new Rectangle((int)pos.X, (int)pos.Y, 5, 5));
+                    graphicsObj.FillRectangle(brush, (int)pos.X, (int)pos.Y, 5, 5);
                 }
             }
             else if (sceneObj is Line)
@@ -212,6 +213,7 @@ namespace Graphics_Test
 
         public void MoveLocal(Vector3 direction)
         {
+
             position += direction;
         }
 
@@ -317,10 +319,16 @@ namespace Graphics_Test
 
         public void DrawToGraphicsObj(Graphics graphicsObj)
         {
+            System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+            timer.Start();
             foreach (SceneObject target in sceneObjects)
             {
                 MainCamera.DrawSceneObject(target, graphicsObj);
             }
+            timer.Stop();
+            Font font = new Font(FontFamily.GenericMonospace, 10f);
+            graphicsObj.DrawString(MainCamera.theta.Repr(), font, Brushes.Green, 0, 0);
+            graphicsObj.DrawString(timer.ElapsedMilliseconds.ToString(), font, Brushes.Green, 0, 20);
         }
 
         public void MoveScene(Vector3 direction)
