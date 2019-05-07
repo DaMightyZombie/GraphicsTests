@@ -50,6 +50,8 @@ namespace Graphics_Test
                 Scene.AddSceneObject(new Point(new Vector3(100, 0, 100)));
                 Scene.AddSceneObject(new Point(new Vector3(100, 100, 0)));
                 Scene.AddSceneObject(new Point(new Vector3(100, 100, 100)));
+
+                Scene.MainCamera.SetPos(new Vector3(0, 0, -200));
             }
             #endregion
             #region line test
@@ -110,42 +112,68 @@ namespace Graphics_Test
                 //diagonals
                 Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(350, 100, 300)));
                 Scene.AddSceneObject(new Line(new Vector3(50, 100, 0), new Vector3(-250, 100, 300)));
+
+                Scene.MainCamera.SetPos(new Vector3(0, 0, -200));
             }
             #endregion
             #region plotter test 3d sine
             else if (SceneIndex == 2)
             {
-                const int dim = 25;
+                const int dim = 50;
+                const int halfdim = dim / 2;
 
-                for (int i = 0; i < dim; i++)
+                for (int i = -halfdim; i < halfdim; i++)
                 {
-                    for (int j = 0; j < dim; j++)
+                    for (int j = -halfdim; j < halfdim; j++)
                     {
                         //3d sine
-                        Scene.AddSceneObject(new Point(new Vector3(i * 10, (Math.Sin(i) + Math.Sin(j)) * 3 + 100, j * 10)));
+                        Scene.AddSceneObject(new Point(new Vector3(i * 15, (Math.Sin(i) + Math.Sin(j)) * 7, j * 15)));
                     }
                 }
+
+                Scene.MainCamera.SetPos(new Vector3(0, -450, -520));
+                Scene.MainCamera.SetAng(new Vector3(-0.75, 0, 0));
             }
             #endregion
             #region plotter test ripple
             else if (SceneIndex == 3)
             {
-                const int dim = 25;
+                const int dim = 50;
                 const int halfdim = dim / 2;
 
-                for (int i = 0; i < dim; i++)
+                for (int i = -halfdim; i < halfdim; i++)
                 {
-                    for (int j = 0; j < dim; j++)
+                    for (int j = -halfdim; j < halfdim; j++)
                     {
                         //ripple
-                        double distance = Math.Sqrt((i-halfdim)*(i-halfdim) + (j-halfdim)*(j-halfdim));
-                        Scene.AddSceneObject(new Point(new Vector3(i * 15, -Math.Sin(distance)*60/distance, j * 15)));
+                        double distance = Math.Sqrt(i*i + j*j);
+                        Scene.AddSceneObject(new Point(new Vector3(i * 15, -Math.Cos(distance) * 2500 / (distance* distance + 100), j * 15)));
                     }
                 }
+
+                Scene.MainCamera.SetPos(new Vector3(0, -450, -520));
+                Scene.MainCamera.SetAng(new Vector3(-0.75, 0, 0));
+            }
+            #endregion
+            #region plotter test curve
+            else if (SceneIndex == 4)
+            {
+                const int dim = 50;
+                const int halfdim = dim / 2;
+
+                for (int i = -halfdim; i < halfdim; i++)
+                {
+                    for (int j = -halfdim; j < halfdim; j++)
+                    {
+                        Scene.AddSceneObject(new Point(new Vector3(i * 15, j*j-i*i, j * 15)));
+                    }
+                }
+
+                Scene.MainCamera.SetPos(new Vector3(0, -450, -520));
+                Scene.MainCamera.SetAng(new Vector3(-0.75, 0, 0));
             }
             #endregion
 
-            Scene.MainCamera.SetPos(new Vector3(50, 50, -200));
 
             Scene.DrawToGraphicsObj(graphicsObj);
             graphicsObj.Dispose();

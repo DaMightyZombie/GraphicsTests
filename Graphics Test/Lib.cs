@@ -15,7 +15,7 @@ namespace Graphics_Test
         Vector2 ImagePlanePos;
 
         const double ClippingPlaneFront = 10d;
-        const double ClippingPlaneBack = 1000d;
+        const double ClippingPlaneBack = 2000d;
 
         private Vector3 costheta;
         private Vector3 sintheta;
@@ -64,10 +64,10 @@ namespace Graphics_Test
             if (sceneObj is Point)
             {
                 Point point = (Point)sceneObj;
-                Point eyePoint = new Point();
+                Point eyePoint;
 
                 //Translate the Worldspace coordinates to eyespace
-                World2Eye(point, eyePoint);
+                World2Eye(point, out eyePoint);
                 
                 //Check if the point is between the two clipping planes
                 if (Eye2Clipped(eyePoint))
@@ -80,10 +80,10 @@ namespace Graphics_Test
             else if (sceneObj is Line)
             {
                 Line line = (Line)sceneObj;
-                Line eyeLine = new Line();
+                Line eyeLine;
 
                 //Translate the Worldspace coordinates to eyespace
-                World2Eye(line, eyeLine);
+                World2Eye(line, out eyeLine);
                 
                 //Clip the line if nessecary
                 if (Eye2Clipped(eyeLine))
@@ -96,13 +96,15 @@ namespace Graphics_Test
             }
         }
 
-        private void World2Eye(Point point, Point eyePoint)
+        private void World2Eye(Point point, out Point eyePoint)
         {
+            eyePoint = new Point();
             eyePoint.position = VecWorld2Eye(point.position);
         }
 
-        private void World2Eye(Line line, Line eyeLine)
+        private void World2Eye(Line line, out Line eyeLine)
         {
+            eyeLine = new Line();
             eyeLine.point1 = VecWorld2Eye(line.point1);
             eyeLine.point2 = VecWorld2Eye(line.point2);
         }
@@ -213,8 +215,12 @@ namespace Graphics_Test
 
         public void MoveLocal(Vector3 direction)
         {
-
-            position += direction;
+            Vector3 worldDirection = new Vector3(
+                costheta.Y * direction.X + sintheta.Y * direction.Z,
+                direction.Y,
+                costheta.Y * direction.Z - sintheta.Y * direction.X
+            );
+            position += worldDirection;
         }
 
         public void Rotate(Vector3 rotation)
@@ -328,7 +334,8 @@ namespace Graphics_Test
             timer.Stop();
             Font font = new Font(FontFamily.GenericMonospace, 10f);
             graphicsObj.DrawString(MainCamera.theta.Repr(), font, Brushes.Green, 0, 0);
-            graphicsObj.DrawString(timer.ElapsedMilliseconds.ToString(), font, Brushes.Green, 0, 20);
+            graphicsObj.DrawString(MainCamera.position.Repr(), font, Brushes.Green, 0, 20);
+            graphicsObj.DrawString(timer.ElapsedMilliseconds.ToString(), font, Brushes.Green, 0, 40);
         }
 
         public void MoveScene(Vector3 direction)
