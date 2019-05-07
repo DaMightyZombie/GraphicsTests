@@ -38,7 +38,7 @@ namespace Graphics_Test
 
         public Camera(double Width, double Height, Vector3 _position, Vector3 _rotation, double _ImagePlaneDistance)
         {
-            ImagePlanePos = new Vector2(Width/2,Height/2);
+            ImagePlanePos = new Vector2(Width / 2, Height / 2);
             brush = Brushes.Green;
             pen = new Pen(Color.Green);
             ImagePlaneDistance = _ImagePlaneDistance;
@@ -68,7 +68,7 @@ namespace Graphics_Test
 
                 //Translate the Worldspace coordinates to eyespace
                 World2Eye(point, out eyePoint);
-                
+
                 //Check if the point is between the two clipping planes
                 if (Eye2Clipped(eyePoint))
                 {
@@ -84,7 +84,7 @@ namespace Graphics_Test
 
                 //Translate the Worldspace coordinates to eyespace
                 World2Eye(line, out eyeLine);
-                
+
                 //Clip the line if nessecary
                 if (Eye2Clipped(eyeLine))
                 {
@@ -92,7 +92,7 @@ namespace Graphics_Test
                     Vector2 pos2 = LocalSpace2ScreenSpace(eyeLine.point2);
                     graphicsObj.DrawLine(pen, (float)pos1.X, (float)pos1.Y, (float)pos2.X, (float)pos2.Y);
                 }
-                
+
             }
         }
 
@@ -107,6 +107,21 @@ namespace Graphics_Test
             eyeLine = new Line();
             eyeLine.point1 = VecWorld2Eye(line.point1);
             eyeLine.point2 = VecWorld2Eye(line.point2);
+        }
+
+        private void World2Eye(Vertex vertex, out Vertex eyeVert)
+        {
+            eyeVert = new Vertex();
+            eyeVert.position = VecWorld2Eye(vertex.position);
+        }
+
+        private void World2Eye(Tri tri, Tri eyeTri)
+        {
+            eyeTri = new Tri();
+            for (int i = 0; i < 2; i++)
+            {
+                eyeTri.Vertices[i].position = VecWorld2Eye(tri.Vertices[i].position);
+            }
         }
 
         private Vector3 VecWorld2Eye(Vector3 world)
@@ -129,6 +144,193 @@ namespace Graphics_Test
                 return true;
             }
             return false;
+        }
+
+        private bool Eye2Clipped(Vertex vertex)
+        {
+            if (ClippingPlaneFront < vertex.position.Z && vertex.position.Z < ClippingPlaneBack)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private bool Eye2Clipped(Tri tri, out Shape3D ClippedShape)
+        {
+            ClippedShape = new Tri();
+
+            byte ClippedVertsFront = 0;
+            byte ClippedVertsBack = 0;
+            if (tri.Vertices[0].position.Z < ClippingPlaneFront)
+            {
+                ClippedVertsFront |= 1;
+            }
+            if (tri.Vertices[1].position.Z < ClippingPlaneFront)
+            {
+                ClippedVertsFront |= 2;
+            }
+            if (tri.Vertices[2].position.Z < ClippingPlaneFront)
+            {
+                ClippedVertsFront |= 4;
+            }
+
+
+            if (tri.Vertices[0].position.Z > ClippingPlaneBack)
+            {
+                ClippedVertsBack |= 1;
+            }
+            if (tri.Vertices[1].position.Z > ClippingPlaneBack)
+            {
+                ClippedVertsBack |= 2;
+            }
+            if (tri.Vertices[2].position.Z > ClippingPlaneBack)
+            {
+                ClippedVertsBack |= 4;
+            }
+            #region old stuff
+            /*
+            //are all vertices in front of the front clipping plane?
+            if (ClippedVertsFront == 7)
+            {
+                return false;
+            }
+
+            //are all vertices behind the back clipping plane?
+            if (ClippedVertsBack == 7)
+            {
+                return false;
+            }
+
+            //is exactly one vertex in front of the front clipping plane?
+            if (ClippedVertsFront == 1 || ClippedVertsFront == 2 || ClippedVertsFront == 4)
+            {
+                ClippedShape = new Quad();
+
+                if (ClippedVertsFront == 1)
+                {
+                    double factor1 = (ClippingPlaneFront - tri.Vertices[0].position.Z) / (tri.Vertices[2].position.Z - tri.Vertices[0].position.Z);
+                    double factor2 = (ClippingPlaneFront - tri.Vertices[0].position.Z) / (tri.Vertices[1].position.Z - tri.Vertices[0].position.Z);
+                    ClippedShape.Vertices = new Vertex[]
+                    {
+                        tri.Vertices[1],
+                        tri.Vertices[2],
+                        new Vertex(new Vector3(
+                            tri.Vertices[2].position.X + factor1 * (tri.Vertices[0].position.X - tri.Vertices[2].position.X),
+                            tri.Vertices[2].position.Y + factor1 * (tri.Vertices[0].position.Y - tri.Vertices[2].position.Y),
+                            ClippingPlaneFront)),
+                        new Vertex(new Vector3(
+                            tri.Vertices[1].position.X + factor2 * (tri.Vertices[0].position.X - tri.Vertices[1].position.X),
+                            tri.Vertices[1].position.Y + factor2 * (tri.Vertices[0].position.Y - tri.Vertices[1].position.Y),
+                            ClippingPlaneFront))
+                    };
+                }
+                else if (ClippedVertsFront == 2)
+                {
+                    double factor1 = (ClippingPlaneFront - tri.Vertices[1].position.Z) / (tri.Vertices[2].position.Z - tri.Vertices[1].position.Z);
+                    double factor2 = (ClippingPlaneFront - tri.Vertices[1].position.Z) / (tri.Vertices[0].position.Z - tri.Vertices[1].position.Z);
+                    ClippedShape.Vertices = new Vertex[]
+                    {
+                        tri.Vertices[0],
+                        tri.Vertices[2],
+                        new Vertex(new Vector3(
+                            tri.Vertices[2].position.X + factor1 * (tri.Vertices[1].position.X - tri.Vertices[2].position.X),
+                            tri.Vertices[2].position.Y + factor1 * (tri.Vertices[1].position.Y - tri.Vertices[2].position.Y),
+                            ClippingPlaneFront)),
+                        new Vertex(new Vector3(
+                            tri.Vertices[0].position.X + factor2 * (tri.Vertices[1].position.X - tri.Vertices[0].position.X),
+                            tri.Vertices[0].position.Y + factor2 * (tri.Vertices[1].position.Y - tri.Vertices[0].position.Y),
+                            ClippingPlaneFront))
+                    };
+                }
+                else if (ClippedVertsFront == 4)
+                {
+                    double factor1 = (ClippingPlaneFront - tri.Vertices[2].position.Z) / (tri.Vertices[0].position.Z - tri.Vertices[2].position.Z);
+                    double factor2 = (ClippingPlaneFront - tri.Vertices[2].position.Z) / (tri.Vertices[1].position.Z - tri.Vertices[2].position.Z);
+                    ClippedShape.Vertices = new Vertex[]
+                    {
+                        tri.Vertices[0],
+                        tri.Vertices[1],
+                        new Vertex(new Vector3(
+                            tri.Vertices[1].position.X + factor2 * (tri.Vertices[2].position.X - tri.Vertices[1].position.X),
+                            tri.Vertices[1].position.Y + factor2 * (tri.Vertices[2].position.Y - tri.Vertices[1].position.Y),
+                            ClippingPlaneFront)),
+                        new Vertex(new Vector3(
+                            tri.Vertices[0].position.X + factor1 * (tri.Vertices[2].position.X - tri.Vertices[0].position.X),
+                            tri.Vertices[0].position.Y + factor1 * (tri.Vertices[2].position.Y - tri.Vertices[0].position.Y),
+                            ClippingPlaneFront))
+                    };
+                }
+            }
+            */
+            #endregion
+
+            double factor1, factor2;
+            switch (ClippedVertsFront)
+            {
+                case 1://only vert #0 is clipped
+                    factor1 = (ClippingPlaneFront - tri.Vertices[0].position.Z) / (tri.Vertices[2].position.Z - tri.Vertices[0].position.Z);
+                    factor2 = (ClippingPlaneFront - tri.Vertices[0].position.Z) / (tri.Vertices[1].position.Z - tri.Vertices[0].position.Z);
+                    ClippedShape.Vertices = new Vertex[]
+                    {
+                        tri.Vertices[1],
+                        tri.Vertices[2],
+                        new Vertex(new Vector3(
+                            tri.Vertices[2].position.X + factor1 * (tri.Vertices[0].position.X - tri.Vertices[2].position.X),
+                            tri.Vertices[2].position.Y + factor1 * (tri.Vertices[0].position.Y - tri.Vertices[2].position.Y),
+                            ClippingPlaneFront)),
+                        new Vertex(new Vector3(
+                            tri.Vertices[1].position.X + factor2 * (tri.Vertices[0].position.X - tri.Vertices[1].position.X),
+                            tri.Vertices[1].position.Y + factor2 * (tri.Vertices[0].position.Y - tri.Vertices[1].position.Y),
+                            ClippingPlaneFront))
+                    };
+                    break;
+                case 2://only vert #1 is clipped
+                    factor1 = (ClippingPlaneFront - tri.Vertices[1].position.Z) / (tri.Vertices[2].position.Z - tri.Vertices[1].position.Z);
+                    factor2 = (ClippingPlaneFront - tri.Vertices[1].position.Z) / (tri.Vertices[0].position.Z - tri.Vertices[1].position.Z);
+                    ClippedShape.Vertices = new Vertex[]
+                    {
+                        tri.Vertices[0],
+                        tri.Vertices[2],
+                        new Vertex(new Vector3(
+                            tri.Vertices[2].position.X + factor1 * (tri.Vertices[1].position.X - tri.Vertices[2].position.X),
+                            tri.Vertices[2].position.Y + factor1 * (tri.Vertices[1].position.Y - tri.Vertices[2].position.Y),
+                            ClippingPlaneFront)),
+                        new Vertex(new Vector3(
+                            tri.Vertices[0].position.X + factor2 * (tri.Vertices[1].position.X - tri.Vertices[0].position.X),
+                            tri.Vertices[0].position.Y + factor2 * (tri.Vertices[1].position.Y - tri.Vertices[0].position.Y),
+                            ClippingPlaneFront))
+                    };
+                    break;
+                case 3://verts #0 and #1 are clipped
+                    break;
+                case 4://only vert #2 is clipped
+                    factor1 = (ClippingPlaneFront - tri.Vertices[2].position.Z) / (tri.Vertices[0].position.Z - tri.Vertices[2].position.Z);
+                    factor2 = (ClippingPlaneFront - tri.Vertices[2].position.Z) / (tri.Vertices[1].position.Z - tri.Vertices[2].position.Z);
+                    ClippedShape.Vertices = new Vertex[]
+                    {
+                        tri.Vertices[0],
+                        tri.Vertices[1],
+                        new Vertex(new Vector3(
+                            tri.Vertices[1].position.X + factor2 * (tri.Vertices[2].position.X - tri.Vertices[1].position.X),
+                            tri.Vertices[1].position.Y + factor2 * (tri.Vertices[2].position.Y - tri.Vertices[1].position.Y),
+                            ClippingPlaneFront)),
+                        new Vertex(new Vector3(
+                            tri.Vertices[0].position.X + factor1 * (tri.Vertices[2].position.X - tri.Vertices[0].position.X),
+                            tri.Vertices[0].position.Y + factor1 * (tri.Vertices[2].position.Y - tri.Vertices[0].position.Y),
+                            ClippingPlaneFront))
+                    };
+                    break;
+                case 5://verts #0 and #2 are clipped
+                    break;
+                case 6://verts #1 and #2 are clipped
+                    break;
+                case 7://all verts are clipped
+                    return false;
+                default:
+                    throw new Exception();
+            }
+
+            return true;
         }
 
         private bool Eye2Clipped(Line line)
@@ -228,9 +430,9 @@ namespace Graphics_Test
             SetAng(theta + rotation);
         }
 
-        public void ChangeImagePlaneDistance(double d)
+        public void ChangeImagePlaneDistance(double amount)
         {
-            ImagePlaneDistance += d;
+            ImagePlaneDistance += amount;
         }
 
         public void NextDotIcon()
@@ -256,7 +458,7 @@ namespace Graphics_Test
             return $"({X}, {Y})";
         }
 
-        public static Vector2 operator + (Vector2 a, Vector2 b)
+        public static Vector2 operator +(Vector2 a, Vector2 b)
         {
             return new Vector2(a.X + b.X, a.Y + b.Y);
         }
@@ -401,5 +603,75 @@ namespace Graphics_Test
         {
             return new Line(new Vector3(point1.X, point1.Y, point1.Z), new Vector3(point2.X, point2.Y, point2.Z));
         }
+    }
+
+    class Vertex : SceneObject
+    {
+        public Vector3 position;
+        public Vertex(Vector3 _position)
+        {
+            position = _position;
+        }
+
+        public Vertex()
+        {
+            position = new Vector3();
+        }
+
+        public override void Move(Vector3 direction)
+        {
+            position += direction;
+        }
+    }
+
+    class Tri : Shape3D
+    {
+        public Tri()
+        {
+            Vertices = new Vertex[3];
+        }
+        public override void Move(Vector3 direction)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                Vertices[i].position += direction;
+            }
+        }
+    }
+
+    class Quad : Shape3D
+    {
+        public Quad()
+        {
+            Vertices = new Vertex[3];
+        }
+        public override void Move(Vector3 direction)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                Vertices[i].position += direction;
+            }
+        }
+    }
+
+    class Quint : Shape3D
+    {
+        public Quint()
+        {
+            Vertices = new Vertex[4];
+        }
+        public override void Move(Vector3 direction)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                Vertices[i].position += direction;
+            }
+        }
+    }
+
+    abstract class Shape3D : SceneObject
+    {
+        public Vertex[] Vertices;
+
     }
 }
