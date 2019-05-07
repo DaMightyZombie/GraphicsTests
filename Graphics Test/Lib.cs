@@ -14,8 +14,8 @@ namespace Graphics_Test
         //Position of the image plane relative to the camera
         Vector2 ImagePlanePos;
 
-        const double ClippingPlaneFront = 10d;
-        const double ClippingPlaneBack = 2000d;
+        const double zNear = 10d;
+        const double zFar = 2000d;
 
         private Vector3 costheta;
         private Vector3 sintheta;
@@ -27,14 +27,15 @@ namespace Graphics_Test
 
         private int SelectedIconIndex;
 
-        private static readonly Icon[] PointIcons = {
-            new Icon(Application.StartupPath + @"\img\point_dot.ico"),
-            new Icon(Application.StartupPath + @"\img\point_circle.ico"),
-            new Icon(Application.StartupPath + @"\img\point_cross.ico"),
-            new Icon(Application.StartupPath + @"\img\point_cross2.ico")
+        private static readonly Bitmap[] PointIcons = {
+            new Bitmap(Application.StartupPath + @"\img\point_dot.ico"),
+            new Bitmap(Application.StartupPath + @"\img\point_circle.ico"),
+            new Bitmap(Application.StartupPath + @"\img\point_cross.ico"),
+            new Bitmap(Application.StartupPath + @"\img\point_cross2.ico")
+
         };
 
-        private Icon SelectedPointIcon;
+        private Bitmap SelectedPointIcon;
 
         public Camera(double Width, double Height, Vector3 _position, Vector3 _rotation, double _ImagePlaneDistance)
         {
@@ -48,7 +49,7 @@ namespace Graphics_Test
             SelectedIconIndex = 0;
         }
 
-        public Vector2 LocalSpace2ScreenSpace(Vector3 relativePosition)
+        public Vector2 Eye2Screen(Vector3 relativePosition)
         {
             double outX, outY;
 
@@ -72,9 +73,9 @@ namespace Graphics_Test
                 //Check if the point is between the two clipping planes
                 if (Eye2Clipped(eyePoint))
                 {
-                    Vector2 pos = LocalSpace2ScreenSpace(eyePoint.position);
-                    //graphicsObj.DrawIconUnstretched(SelectedPointIcon, new Rectangle((int)pos.X, (int)pos.Y, 5, 5));
-                    graphicsObj.FillRectangle(brush, (int)pos.X, (int)pos.Y, 5, 5);
+                    Vector2 pos = Eye2Screen(eyePoint.position);
+                    //graphicsObj.FillRectangle(brush, (int)pos.X, (int)pos.Y, 5, 5);
+                    graphicsObj.DrawImageUnscaled(SelectedPointIcon, new Rectangle((int)pos.X, (int)pos.Y, 5, 5));
                 }
             }
             else if (sceneObj is Line)
@@ -88,11 +89,30 @@ namespace Graphics_Test
                 //Clip the line if nessecary
                 if (Eye2Clipped(eyeLine))
                 {
-                    Vector2 pos1 = LocalSpace2ScreenSpace(eyeLine.point1);
-                    Vector2 pos2 = LocalSpace2ScreenSpace(eyeLine.point2);
+                    Vector2 pos1 = Eye2Screen(eyeLine.point1);
+                    Vector2 pos2 = Eye2Screen(eyeLine.point2);
                     graphicsObj.DrawLine(pen, (float)pos1.X, (float)pos1.Y, (float)pos2.X, (float)pos2.Y);
                 }
 
+            }
+            else if (sceneObj is Tri)
+            {
+                Tri tri = (Tri)sceneObj;
+                Tri eyeTri;
+
+                World2Eye(tri, out eyeTri);
+
+                if (Eye2Clipped(eyeTri, out Shape3D shape3D))
+                {
+                    List<PointF> points2D = new List<PointF>();
+                    foreach (Vertex item in shape3D.Vertices)
+                    {
+                        Vector2 v = Eye2Screen(item.position);
+                        points2D.Add(new PointF((float)v.X, (float)v.Y));
+                    }
+                    PointF[] points2DArr = points2D.ToArray();
+                    graphicsObj.FillPolygon(Brushes.Azure, points2DArr);
+                }
             }
         }
 
@@ -115,7 +135,7 @@ namespace Graphics_Test
             eyeVert.position = VecWorld2Eye(vertex.position);
         }
 
-        private void World2Eye(Tri tri, Tri eyeTri)
+        private void World2Eye(Tri tri, out Tri eyeTri)
         {
             eyeTri = new Tri();
             for (int i = 0; i < 2; i++)
@@ -139,7 +159,7 @@ namespace Graphics_Test
 
         private bool Eye2Clipped(Point point)
         {
-            if (ClippingPlaneFront < point.position.Z && point.position.Z < ClippingPlaneBack)
+            if (zNear < point.position.Z && point.position.Z < zFar)
             {
                 return true;
             }
@@ -148,7 +168,7 @@ namespace Graphics_Test
 
         private bool Eye2Clipped(Vertex vertex)
         {
-            if (ClippingPlaneFront < vertex.position.Z && vertex.position.Z < ClippingPlaneBack)
+            if (zNear < vertex.position.Z && vertex.position.Z < zFar)
             {
                 return true;
             }
@@ -161,29 +181,29 @@ namespace Graphics_Test
 
             byte ClippedVertsFront = 0;
             byte ClippedVertsBack = 0;
-            if (tri.Vertices[0].position.Z < ClippingPlaneFront)
+            if (tri.Vertices[0].position.Z < zNear)
             {
                 ClippedVertsFront |= 1;
             }
-            if (tri.Vertices[1].position.Z < ClippingPlaneFront)
+            if (tri.Vertices[1].position.Z < zNear)
             {
                 ClippedVertsFront |= 2;
             }
-            if (tri.Vertices[2].position.Z < ClippingPlaneFront)
+            if (tri.Vertices[2].position.Z < zNear)
             {
                 ClippedVertsFront |= 4;
             }
 
 
-            if (tri.Vertices[0].position.Z > ClippingPlaneBack)
+            if (tri.Vertices[0].position.Z > zFar)
             {
                 ClippedVertsBack |= 1;
             }
-            if (tri.Vertices[1].position.Z > ClippingPlaneBack)
+            if (tri.Vertices[1].position.Z > zFar)
             {
                 ClippedVertsBack |= 2;
             }
-            if (tri.Vertices[2].position.Z > ClippingPlaneBack)
+            if (tri.Vertices[2].position.Z > zFar)
             {
                 ClippedVertsBack |= 4;
             }
@@ -268,8 +288,9 @@ namespace Graphics_Test
             switch (ClippedVertsFront)
             {
                 case 1://only vert #0 is clipped
-                    factor1 = (ClippingPlaneFront - tri.Vertices[0].position.Z) / (tri.Vertices[2].position.Z - tri.Vertices[0].position.Z);
-                    factor2 = (ClippingPlaneFront - tri.Vertices[0].position.Z) / (tri.Vertices[1].position.Z - tri.Vertices[0].position.Z);
+                    ClippedShape = new Quad();
+                    factor1 = (zNear - tri.Vertices[0].position.Z) / (tri.Vertices[2].position.Z - tri.Vertices[0].position.Z);
+                    factor2 = (zNear - tri.Vertices[0].position.Z) / (tri.Vertices[1].position.Z - tri.Vertices[0].position.Z);
                     ClippedShape.Vertices = new Vertex[]
                     {
                         tri.Vertices[1],
@@ -277,35 +298,35 @@ namespace Graphics_Test
                         new Vertex(new Vector3(
                             tri.Vertices[2].position.X + factor1 * (tri.Vertices[0].position.X - tri.Vertices[2].position.X),
                             tri.Vertices[2].position.Y + factor1 * (tri.Vertices[0].position.Y - tri.Vertices[2].position.Y),
-                            ClippingPlaneFront)),
+                            zNear)),
                         new Vertex(new Vector3(
                             tri.Vertices[1].position.X + factor2 * (tri.Vertices[0].position.X - tri.Vertices[1].position.X),
                             tri.Vertices[1].position.Y + factor2 * (tri.Vertices[0].position.Y - tri.Vertices[1].position.Y),
-                            ClippingPlaneFront))
+                            zNear))
                     };
                     break;
                 case 2://only vert #1 is clipped
-                    factor1 = (ClippingPlaneFront - tri.Vertices[1].position.Z) / (tri.Vertices[2].position.Z - tri.Vertices[1].position.Z);
-                    factor2 = (ClippingPlaneFront - tri.Vertices[1].position.Z) / (tri.Vertices[0].position.Z - tri.Vertices[1].position.Z);
+                    ClippedShape = new Quad();
+                    factor1 = (zNear - tri.Vertices[1].position.Z) / (tri.Vertices[2].position.Z - tri.Vertices[1].position.Z);
+                    factor2 = (zNear - tri.Vertices[1].position.Z) / (tri.Vertices[0].position.Z - tri.Vertices[1].position.Z);
                     ClippedShape.Vertices = new Vertex[]
                     {
                         tri.Vertices[0],
-                        tri.Vertices[2],
                         new Vertex(new Vector3(
                             tri.Vertices[2].position.X + factor1 * (tri.Vertices[1].position.X - tri.Vertices[2].position.X),
                             tri.Vertices[2].position.Y + factor1 * (tri.Vertices[1].position.Y - tri.Vertices[2].position.Y),
-                            ClippingPlaneFront)),
+                            zNear)),
                         new Vertex(new Vector3(
                             tri.Vertices[0].position.X + factor2 * (tri.Vertices[1].position.X - tri.Vertices[0].position.X),
                             tri.Vertices[0].position.Y + factor2 * (tri.Vertices[1].position.Y - tri.Vertices[0].position.Y),
-                            ClippingPlaneFront))
+                            zNear)),
+                        tri.Vertices[2]
                     };
                     break;
-                case 3://verts #0 and #1 are clipped
-                    break;
                 case 4://only vert #2 is clipped
-                    factor1 = (ClippingPlaneFront - tri.Vertices[2].position.Z) / (tri.Vertices[0].position.Z - tri.Vertices[2].position.Z);
-                    factor2 = (ClippingPlaneFront - tri.Vertices[2].position.Z) / (tri.Vertices[1].position.Z - tri.Vertices[2].position.Z);
+                    ClippedShape = new Quad();
+                    factor1 = (zNear - tri.Vertices[2].position.Z) / (tri.Vertices[0].position.Z - tri.Vertices[2].position.Z);
+                    factor2 = (zNear - tri.Vertices[2].position.Z) / (tri.Vertices[1].position.Z - tri.Vertices[2].position.Z);
                     ClippedShape.Vertices = new Vertex[]
                     {
                         tri.Vertices[0],
@@ -313,11 +334,21 @@ namespace Graphics_Test
                         new Vertex(new Vector3(
                             tri.Vertices[1].position.X + factor2 * (tri.Vertices[2].position.X - tri.Vertices[1].position.X),
                             tri.Vertices[1].position.Y + factor2 * (tri.Vertices[2].position.Y - tri.Vertices[1].position.Y),
-                            ClippingPlaneFront)),
+                            zNear)),
                         new Vertex(new Vector3(
                             tri.Vertices[0].position.X + factor1 * (tri.Vertices[2].position.X - tri.Vertices[0].position.X),
                             tri.Vertices[0].position.Y + factor1 * (tri.Vertices[2].position.Y - tri.Vertices[0].position.Y),
-                            ClippingPlaneFront))
+                            zNear))
+                    };
+                    break;
+                case 3://verts #0 and #1 are clipped
+                    factor1 = (zNear - tri.Vertices[0].position.Z) / (tri.Vertices[2].position.Z - tri.Vertices[0].position.Z);
+                    factor2 = (zNear - tri.Vertices[1].position.Z) / (tri.Vertices[2].position.Z - tri.Vertices[1].position.Z);
+                    ClippedShape.Vertices = new Vertex[]
+                    {
+                        new Vertex(new Vector3()),
+                        new Vertex(new Vector3()),
+                        tri.Vertices[2]
                     };
                     break;
                 case 5://verts #0 and #2 are clipped
@@ -326,8 +357,7 @@ namespace Graphics_Test
                     break;
                 case 7://all verts are clipped
                     return false;
-                default:
-                    throw new Exception();
+                default: throw new Exception();
             }
 
             return true;
@@ -338,29 +368,29 @@ namespace Graphics_Test
             double factor;
 
             //are both ends of the line in front of the front clipping plane?
-            if (line.point1.Z <= ClippingPlaneFront && line.point2.Z <= ClippingPlaneFront)
+            if (line.point1.Z <= zNear && line.point2.Z <= zNear)
             {
                 return false;
             }
 
             //are both ends of the line behind the back clipping plane?
-            if (line.point1.Z >= ClippingPlaneBack && line.point2.Z >= ClippingPlaneBack)
+            if (line.point1.Z >= zFar && line.point2.Z >= zFar)
             {
                 return false;
             }
 
             //is one end of the line in front of the front clipping plane?
-            if (line.point1.Z < ClippingPlaneFront || line.point2.Z < ClippingPlaneFront)
+            if (line.point1.Z < zNear || line.point2.Z < zNear)
             {
-                factor = (ClippingPlaneFront - line.point1.Z) / (line.point2.Z - line.point1.Z);
+                factor = (zNear - line.point1.Z) / (line.point2.Z - line.point1.Z);
 
-                if (line.point1.Z < ClippingPlaneFront)
+                if (line.point1.Z < zNear)
                 {
                     line.point1.X = line.point1.X + factor * (line.point2.X - line.point1.X);
 
                     line.point1.Y = line.point1.Y + factor * (line.point2.Y - line.point1.Y);
 
-                    line.point1.Z = ClippingPlaneFront;
+                    line.point1.Z = zNear;
                 }
                 else
                 {
@@ -368,22 +398,22 @@ namespace Graphics_Test
 
                     line.point2.Y = line.point1.Y + factor * (line.point2.Y - line.point1.Y);
 
-                    line.point2.Z = ClippingPlaneFront;
+                    line.point2.Z = zNear;
                 }
             }
 
             //is one end of the line behind the back clipping plane?
-            if ((line.point1.Z > ClippingPlaneBack) || (line.point2.Z > ClippingPlaneBack))
+            if ((line.point1.Z > zFar) || (line.point2.Z > zFar))
             {
-                factor = (ClippingPlaneBack - line.point1.Z) / (line.point2.Z - line.point1.Z);
+                factor = (zFar - line.point1.Z) / (line.point2.Z - line.point1.Z);
 
-                if (line.point1.Z > ClippingPlaneBack)
+                if (line.point1.Z > zFar)
                 {
                     line.point1.X = line.point1.X + factor * (line.point2.X - line.point1.X);
 
                     line.point1.Y = line.point1.Y + factor * (line.point2.Y - line.point1.Y);
 
-                    line.point1.Z = ClippingPlaneBack;
+                    line.point1.Z = zFar;
                 }
                 else
                 {
@@ -391,7 +421,7 @@ namespace Graphics_Test
 
                     line.point2.Y = line.point1.Y + factor * (line.point2.Y - line.point1.Y);
 
-                    line.point2.Z = ClippingPlaneBack;
+                    line.point2.Z = zFar;
                 }
             }
 
@@ -612,6 +642,10 @@ namespace Graphics_Test
         {
             position = _position;
         }
+        public Vertex(double x, double y, double z)
+        {
+            position = new Vector3(x, y, z);
+        }
 
         public Vertex()
         {
@@ -628,7 +662,11 @@ namespace Graphics_Test
     {
         public Tri()
         {
-            Vertices = new Vertex[3];
+            Vertices = new Vertex[3] {new Vertex(), new Vertex(), new Vertex()};
+        }
+        public Tri(Vertex[] verts)
+        {
+            Vertices = verts;
         }
         public override void Move(Vector3 direction)
         {
@@ -672,6 +710,5 @@ namespace Graphics_Test
     abstract class Shape3D : SceneObject
     {
         public Vertex[] Vertices;
-
     }
 }

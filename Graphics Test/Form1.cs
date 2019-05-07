@@ -36,7 +36,7 @@ namespace Graphics_Test
             */
             Scene = new Scene(ClientRectangle.Width, ClientRectangle.Height);
 
-            int SceneIndex = 3;
+            int SceneIndex = 4;
 
             #region point test
             if (SceneIndex == 0)
@@ -165,7 +165,7 @@ namespace Graphics_Test
                 {
                     for (int j = -halfdim; j < halfdim; j++)
                     {
-                        Scene.AddSceneObject(new Point(new Vector3(i * 15, j*j-i*i, j * 15)));
+                        Scene.AddSceneObject(new Point(new Vector3(i * 15, (j*j-i*i) >> 2 , j * 15)));
                     }
                 }
 
@@ -173,7 +173,14 @@ namespace Graphics_Test
                 Scene.MainCamera.SetAng(new Vector3(-0.75, 0, 0));
             }
             #endregion
+            #region Tri test
+            if (SceneIndex == 5)
+            {
+                Scene.AddSceneObject(new Tri(new Vertex[] {new Vertex(0,0,0), new Vertex(0,0,100), new Vertex(100,0,100)}));
 
+                Scene.MainCamera.SetPos(new Vector3(0, 0, -200));
+            }
+            #endregion
 
             Scene.DrawToGraphicsObj(graphicsObj);
             graphicsObj.Dispose();
