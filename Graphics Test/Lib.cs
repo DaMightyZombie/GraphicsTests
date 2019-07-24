@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
+using System.Windows.Input;
 namespace Graphics_Test
 {
     class Camera
@@ -568,6 +568,7 @@ namespace Graphics_Test
             graphicsObj.DrawString(MainCamera.theta.Repr(), font, Brushes.Green, 0, 0);
             graphicsObj.DrawString(MainCamera.position.Repr(), font, Brushes.Green, 0, 20);
             graphicsObj.DrawString(timer.ElapsedMilliseconds.ToString(), font, Brushes.Green, 0, 40);
+            graphicsObj.DrawString(Keyboard.IsKeyDown(Key.T)? "yes":"no", font, Brushes.Green, 0, 60);
         }
 
         public void MoveScene(Vector3 direction)

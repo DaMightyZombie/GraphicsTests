@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace Graphics_Test
 {
     public partial class Form1 : Form
     {
-        private System.Drawing.Bitmap myBitmap;
+        private Bitmap myBitmap;
         Scene Scene;
         public Form1()
         {
@@ -29,14 +30,9 @@ namespace Graphics_Test
                ClientRectangle.Height,
                System.Drawing.Imaging.PixelFormat.Format16bppRgb565);
             graphicsObj = Graphics.FromImage(myBitmap);
-            /*
-            Pen myPen = new Pen(Color.Plum, 3);
-            Rectangle rectangleObj = new Rectangle(0, 0, ClientRectangle.Width, ClientRectangle.Height);
-            graphicsObj.DrawEllipse(myPen, rectangleObj);
-            */
             Scene = new Scene(ClientRectangle.Width, ClientRectangle.Height);
 
-            int SceneIndex = 4;
+            const int SceneIndex = 4;
 
             #region point test
             if (SceneIndex == 0)
@@ -187,76 +183,82 @@ namespace Graphics_Test
 
             Text = $"Resolution: {ClientRectangle.Width}, {ClientRectangle.Height}";
         }
-
-        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        
+        private void Form1_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             Keys pressedKey = e.KeyCode;
             
-            if (pressedKey == Keys.D)
-            {
-                Scene.MainCamera.MoveLocal(new Vector3(5, 0, 0));
-            }
-            else if (pressedKey == Keys.A)
-            {
-                Scene.MainCamera.MoveLocal(new Vector3(-5, 0, 0));
-            }
-            else if (pressedKey == Keys.Space)
-            {
-                Scene.MainCamera.MoveLocal(new Vector3(0, -5, 0));
-            }
-            else if (pressedKey == Keys.ControlKey)
-            {
-                Scene.MainCamera.MoveLocal(new Vector3(0, 5, 0));
-            }
-            else if (pressedKey == Keys.S)
-            {
-                Scene.MainCamera.MoveLocal(new Vector3(0, 0, -5));
-            }
-            else if (pressedKey == Keys.W)
-            {
-                Scene.MainCamera.MoveLocal(new Vector3(0, 0, 5));
-            }
-            else if (pressedKey == Keys.F1)
-            {
-                Scene.MainCamera.ChangeImagePlaneDistance(5);
-            }
-            else if (pressedKey == Keys.F2)
-            {
-                Scene.MainCamera.ChangeImagePlaneDistance(-5);
-            }
-            else if (pressedKey == Keys.Right)
-            {
-                Scene.MainCamera.Rotate(new Vector3(0, 0.03, 0));
-            }
-            else if (pressedKey == Keys.Left)
-            {
-                Scene.MainCamera.Rotate(new Vector3(0, -0.03, 0));
-            }
-            else if (pressedKey == Keys.Up)
-            {
-                Scene.MainCamera.Rotate(new Vector3(0.03, 0, 0));
-            }
-            else if (pressedKey == Keys.Down)
-            {
-                Scene.MainCamera.Rotate(new Vector3(-0.03, 0, 0));
-            }
-            else if (pressedKey == Keys.F3)
+            if (pressedKey == Keys.F3)
             {
                 Scene.MainCamera.NextDotIcon();
             }
         }
-
+        
         public void UpdateImage()
         {
             Graphics graphicsObj = Graphics.FromImage(myBitmap);
 
             graphicsObj.Clear(Color.Black);
 
+            ApplyUserInput();
+
             Scene.DrawToGraphicsObj(graphicsObj);
 
             Invalidate();
 
             graphicsObj.Dispose();
+        }
+
+        public void ApplyUserInput()
+        {
+            if (Keyboard.IsKeyDown(Key.W))
+            {
+                Scene.MainCamera.MoveLocal(new Vector3(0, 0, 5));
+            }
+            if (Keyboard.IsKeyDown(Key.S))
+            {
+                Scene.MainCamera.MoveLocal(new Vector3(0, 0, -5));
+            }
+            if (Keyboard.IsKeyDown(Key.A))
+            {
+                Scene.MainCamera.MoveLocal(new Vector3(-5, 0, 0));
+            }
+            if (Keyboard.IsKeyDown(Key.D))
+            {
+                Scene.MainCamera.MoveLocal(new Vector3(5, 0, 0));
+            }
+            if (Keyboard.IsKeyDown(Key.Space))
+            {
+                Scene.MainCamera.MoveLocal(new Vector3(0, -5, 0));
+            }
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+                Scene.MainCamera.MoveLocal(new Vector3(0, 5, 0));
+            }
+            if (Keyboard.IsKeyDown(Key.F1))
+            {
+                Scene.MainCamera.ChangeImagePlaneDistance(5);
+            }
+            if (Keyboard.IsKeyDown(Key.F2))
+            {
+                Scene.MainCamera.ChangeImagePlaneDistance(-5);
+            }
+            if (Keyboard.IsKeyDown(Key.Up))
+            {
+                Scene.MainCamera.Rotate(new Vector3(0.03, 0, 0));
+            }
+            if (Keyboard.IsKeyDown(Key.Down))
+            {
+                Scene.MainCamera.Rotate(new Vector3(-0.03, 0, 0));
+            }
+            if (Keyboard.IsKeyDown(Key.Left))
+            {
+                Scene.MainCamera.Rotate(new Vector3(0, -0.03, 0));
+            }
+            if (Keyboard.IsKeyDown(Key.Right))
+            {
+                Scene.MainCamera.Rotate(new Vector3(0, 0.03, 0));
+            }
         }
 
         private void Timer1_Tick(object sender, EventArgs e)
