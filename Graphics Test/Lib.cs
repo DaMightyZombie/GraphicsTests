@@ -542,7 +542,9 @@ namespace Graphics_Test
     class Scene
     {
         public Camera MainCamera;
-        List<SceneObject> sceneObjects;
+        public List<SceneObject> sceneObjects;
+        private readonly Font font = new Font(FontFamily.GenericMonospace, 10f);
+        System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
 
         public Scene(int Width, int Height)
         {
@@ -557,18 +559,16 @@ namespace Graphics_Test
 
         public void DrawToGraphicsObj(Graphics graphicsObj)
         {
-            System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+            timer.Reset();
             timer.Start();
             foreach (SceneObject target in sceneObjects)
             {
                 MainCamera.DrawSceneObject(target, graphicsObj);
             }
             timer.Stop();
-            Font font = new Font(FontFamily.GenericMonospace, 10f);
             graphicsObj.DrawString(MainCamera.theta.Repr(), font, Brushes.Green, 0, 0);
             graphicsObj.DrawString(MainCamera.position.Repr(), font, Brushes.Green, 0, 20);
             graphicsObj.DrawString(timer.ElapsedMilliseconds.ToString(), font, Brushes.Green, 0, 40);
-            graphicsObj.DrawString(Keyboard.IsKeyDown(Key.T)? "yes":"no", font, Brushes.Green, 0, 60);
         }
 
         public void MoveScene(Vector3 direction)
